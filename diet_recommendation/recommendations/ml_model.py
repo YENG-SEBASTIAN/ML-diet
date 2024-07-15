@@ -1,6 +1,5 @@
-
 import pandas as pd
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 import joblib
@@ -8,11 +7,9 @@ import joblib
 # Load CSV data
 df = pd.read_csv('data/ghanaian_foods.csv')
 
-
-
 # Preprocess data
 X = df[['Calories (kcal)', 'Protein (g)', 'Carbs (g)', 'Fat (g)', 'Fiber (g)']]
-y = df['Recommended Diet']
+y = df['Recommended Diet']  # Use only 'Recommended Diet' as the target
 
 # Split data into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -25,6 +22,10 @@ model.fit(X_train, y_train)
 y_pred = model.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)
 print(f'Model Accuracy: {accuracy * 100:.2f}%')
+
+# Cross-validation
+cv_scores = cross_val_score(model, X, y, cv=5)
+print(f'Cross-Validation Accuracy: {cv_scores.mean() * 100:.2f}%')
 
 # Save the model
 joblib.dump(model, 'data/diet_recommendation_model.pkl')
