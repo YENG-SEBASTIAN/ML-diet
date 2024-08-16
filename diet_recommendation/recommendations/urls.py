@@ -1,7 +1,6 @@
-
 from django.urls import path
-from recommendations.views import RecommendDiet
+from recommendations import views
 
 urlpatterns = [
-    path('recommend/', RecommendDiet.as_view(), name='recommend_diet'),
+    path('dashboard/', views.dashboard_view, name='dashboard_view'),
 ]
