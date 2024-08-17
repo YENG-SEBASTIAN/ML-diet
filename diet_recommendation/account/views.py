@@ -32,7 +32,7 @@ def signup(request):
 
         # Check if email already exists
         if User.objects.filter(email=email).exists():
-            messages.error(request, "Email already exists.")
+            messages.error(request, "User with this email already exists.")
             return render(request, 'auth/signup.html')
 
         # Create user if everything is fine
@@ -55,17 +55,13 @@ def login(request):
 
         if user is not None:
             auth_login(request, user)
-            # Redirect to 'next' if valid, otherwise to 'dashboard_view'
             if next_url and next_url != request.path:
                 return redirect(next_url)
             else:
-                return redirect(reverse('dashboard_view'))
+                return redirect(reverse('dashboard'))
         else:
             messages.error(request, "Invalid username or password.")
-            # Re-render login page with error messages
             return render(request, 'auth/login.html')
-
-    # Handle GET requests or other request methods
     return render(request, 'auth/login.html')
 
 @login_required

@@ -1,29 +1,29 @@
 {% load static %}
 
-<div class="app-menu navbar-menu">
+<div class="app-menu navbar-menu bg-primar">
     <!-- LOGO -->
     <div class="navbar-brand-box">
       <!-- Dark Logo-->
       <a href="index.html" class="logo logo-dark">
         <span class="logo-sm">
-          <img src="{% static 'images/logo-sm.png' %}" alt="" height="22" />
+          <img src="{% static 'images/diet-logo.png' %}" alt="" height="50" />
         </span>
         <span class="logo-lg">
           <img
-            src="{% static 'images/logo-dark.png' %}"
+            src="{% static 'images/diet-logo.png' %}"
             alt=""
-            height="17"
+            height="50"
           />
         </span>
       </a>
       <!-- Light Logo-->
       <a href="index.html" class="logo logo-light">
         <span class="logo-sm">
-          <img src="{% static 'images/logo-sm.png' %}" alt="" height="22" />
+          <img src="{% static 'images/diet-logo.png' %}" alt="" height="22" />
         </span>
         <span class="logo-lg">
           <img
-            src="{% static 'images/logo-light.png' %}"
+            src="{% static 'images/diet-logo.png' %}"
             alt=""
             height="17"
           />
@@ -47,7 +47,7 @@
           <li class="nav-item">
             <a
               class="nav-link menu-link"
-              href="#sidebarDashboards"
+              href="{% url 'dashboard' %}"
             >
               <i class="bx bxs-dashboard"></i>
               <span data-key="t-dashboards">Dashboard</span>
@@ -85,16 +85,7 @@
           <li class="nav-item">
             <a
               class="nav-link menu-link"
-              href="#sidebarDashboards"
-            >
-              <i class="bx bxs-user"></i>
-              <span data-key="t-dashboards">Profile</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a
-              class="nav-link menu-link"
-              href="#sidebarDashboards"
+              href="{% url 'settings' %}"
             >
               <i class="bx bxs-cog"></i>
               <span data-key="t-dashboards">Settings</span>

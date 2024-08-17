@@ -1,1 +1,185 @@
-{% include 'partials/base.html' %}
+{% extends 'partials/base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block extra_css %}
+    <!-- Add any additional CSS required for the page -->
+    <link href="https://cdn.jsdelivr.net/npm/apexcharts/dist/apexcharts.css" rel="stylesheet">
+{% endblock %}
+
+{% block pagetitle %}
+    {% include "partials/page-title.html" with pagetitle="Dashboard" title="Diet Dashboard" %}
+{% endblock pagetitle %}
+
+{% block body_content %}
+    <div class="row g-4">
+        <!-- Card 1: BMI -->
+        <div class="col-xl-3">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-soft-info text-info rounded-2 fs-2">
+                                <i data-feather="user-check" class="text-info"></i>
+                            </span>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <p class="text-uppercase fw-medium text-muted mb-3">Body Mass Index (BMI)</p>
+                            <div class="d-flex align-items-center mb-3">
+                                <h4 class="fs-4 flex-grow-1 mb-0"><span class="counter-value" data-target="23.5">23.5</span></h4>
+                                <span class="badge badge-soft-success fs-12"><i class="ri-arrow-up-s-line fs-13 align-middle me-1"></i> 1.2%</span>
+                            </div>
+                            <p class="text-muted mb-0">BMI today</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2: Height -->
+        <div class="col-xl-3">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-soft-info text-info rounded-2 fs-2">
+                                <i data-feather="trending-up" class="text-info"></i>
+                            </span>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <p class="text-uppercase fw-medium text-muted mb-3">Height</p>
+                            <div class="d-flex align-items-center mb-3">
+                                <h4 class="fs-4 flex-grow-1 mb-0"><span class="counter-value" data-target="175">175</span> cm</h4>
+                                <span class="badge badge-soft-success fs-12"><i class="ri-arrow-up-s-line fs-13 align-middle me-1"></i> 0.8%</span>
+                            </div>
+                            <p class="text-muted mb-0">Height today</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 3: Weight -->
+        <div class="col-xl-3">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-soft-info text-info rounded-2 fs-2">
+                                <i data-feather="weight" class="text-info"></i>
+                                <i class='bx bx-body'></i>
+                            </span>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <p class="text-uppercase fw-medium text-muted mb-3">Weight</p>
+                            <div class="d-flex align-items-center mb-3">
+                                <h4 class="fs-4 flex-grow-1 mb-0"><span class="counter-value" data-target="70">70</span> kg</h4>
+                                <span class="badge badge-soft-success fs-12"><i class="ri-arrow-up-s-line fs-13 align-middle me-1"></i> 1.5%</span>
+                            </div>
+                            <p class="text-muted mb-0">Weight today</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 4: Health Goal -->
+        <div class="col-xl-3">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-soft-info text-info rounded-2 fs-2">
+                                <i class='bx bxs-check-shield'></i>
+                            </span>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <p class="text-uppercase fw-medium text-muted mb-3">Health Goal</p>
+                            <div class="d-flex align-items-center mb-3">
+                                <h4 class="fs-4 flex-grow-1 mb-0"><span class="counter-value" data-target="Maintain">Maintain</span></h4>
+                            </div>
+                            <p class="text-muted mb-0">Goal for weight management</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Tracking: BMI, Weight, and Health Metrics -->
+        <div class="col-xxl-8">
+            <div class="card card-height-100">
+                <div class="card-header align-items-center d-flex">
+                    <h4 class="card-title mb-0 flex-grow-1">Progress Overview</h4>
+                    <div class="flex-shrink-0">
+                        <div class="dropdown card-header-dropdown">
+                            <a class="text-reset dropdown-btn" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="fw-semibold text-uppercase fs-12">Sort by: </span><span class="text-muted">Current Week<i class="mdi mdi-chevron-down ms-1"></i></span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end">
+                                <a class="dropdown-item" href="#">Today</a>
+                                <a class="dropdown-item" href="#">Last Week</a>
+                                <a class="dropdown-item" href="#">Last Month</a>
+                                <a class="dropdown-item" href="#">Current Year</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body px-0">
+                    <!-- Progress Chart -->
+                    <div id="progress-chart" style="height: 250px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <!-- ApexCharts JS -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
+        var options = {
+            chart: {
+                height: 350,
+                type: 'line'
+            },
+            series: [{
+                name: 'BMI',
+                data: [23.5, 23.6, 23.7, 23.5, 23.4, 23.6, 23.5]
+            }, {
+                name: 'Weight',
+                data: [70, 69.5, 69.0, 69.2, 69.3, 68.8, 68.5]
+            }, {
+                name: 'Height',
+                data: [175, 175.1, 175.2, 175.2, 175.1, 175.0, 175.0]
+            }],
+            xaxis: {
+                categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+            },
+            colors: ['#0d6efd', '#dc3545', '#198754'],
+            yaxis: [
+                {
+                    title: {
+                        text: 'BMI & Height'
+                    },
+                    min: 20,
+                    max: 30
+                },
+                {
+                    opposite: true,
+                    title: {
+                        text: 'Weight (kg)'
+                    },
+                    min: 60,
+                    max: 80
+                }
+            ],
+            tooltip: {
+                shared: true,
+                intersect: false
+            }
+        }
+
+        var chart = new ApexCharts(document.querySelector("#progress-chart"), options);
+        chart.render();
+    </script>
+{% endblock %}
