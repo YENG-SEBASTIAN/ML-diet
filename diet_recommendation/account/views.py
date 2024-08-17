@@ -6,6 +6,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 import re
+from account.forms import UserProfileForm
+from account.models import UserProfile
 
 def signup(request):
     if request.method == 'POST':
@@ -69,3 +71,24 @@ def logout(request):
     auth_logout(request)
     messages.success(request, "You have been logged out.")
     return redirect('login')
+
+
+
+@login_required
+def update_profile(request):
+    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+    
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, instance=user_profile)
+        if form.is_valid():
+            form.save()
+            return redirect('main/profile_update_success')  # Redirect to a success page or profile view
+    else:
+        form = UserProfileForm(instance=user_profile)
+
+    return render(request, 'main/update_profile.html', {'form': form})
+
+
+@login_required
+def profile_update_success(request):
+    return render(request, 'main/profile_update_success.html')
