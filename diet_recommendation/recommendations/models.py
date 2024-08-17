@@ -37,3 +37,21 @@ class UserRecommendationHistory(models.Model):
 
     def __str__(self):
         return f'History for {self.user.username} on {self.recommendation_date}'
+
+
+
+
+class DietRecommendationDataset(models.Model):
+    recommended_diet = models.CharField(max_length=255)
+    calories_kcal = models.IntegerField()
+    protein_g = models.IntegerField()
+    carbs_g = models.IntegerField()
+    fat_g = models.IntegerField()
+    health_benefits = models.TextField()
+    suitable_age_group = models.CharField(max_length=255)
+    meal_type = models.CharField(max_length=100)
+    bmi = models.FloatField()
+    bmi_category = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.recommended_diet
