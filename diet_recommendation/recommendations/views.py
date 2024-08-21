@@ -4,7 +4,14 @@ from django.contrib.auth.decorators import login_required
 from recommendations.models import Recommendation, UserRecommendationHistory
 from account.models import UserProfile
 import json
+from django.http import HttpResponseBadRequest
+import logging
+
 from recommendations.ml_model import recommend_diets
+
+logger = logging.getLogger(__name__)
+
+
 
 @login_required
 def dashboard_view(request):
@@ -54,19 +61,35 @@ def dashboard_view(request):
 
 
 
+
 def diet_recommendation_view(request):
     if request.method == 'POST':
-        # Retrieve user input from the form
-        user_bmi = float(request.POST.get('bmi'))
-        health_goal = request.POST.get('health_goal')
+        try:
+            # Retrieve and validate user input from the form
+            user_bmi = request.POST.get('bmi')
+            health_goal = request.POST.get('health_goal')
 
-        # Get diet recommendations
-        recommended_diets = recommend_diets(user_bmi, health_goal, n_recommendations=10)
+            if not user_bmi or not health_goal:
+                messages.warning(request, "BMI and health goal are required.")
 
-        # Render the results in the template
-        return render(request, 'main/recommendation.html', {
-            'recommended_diets': recommended_diets
-        })
+            try:
+                user_bmi = float(user_bmi)
+            except ValueError:
+                messages.error(request, "Invalid BMI value.")
+
+            # Get diet recommendations
+            recommended_diets = recommend_diets(user_bmi, health_goal, n_recommendations=10)
+            print(recommended_diets)
+            # Render the results in the template
+            return render(request, 'main/recommendation.html', {
+                'recommended_diets': recommended_diets
+            })
+
+        except Exception as e:
+            logger.error(f"Error in diet recommendation view: {e}")
+            return render(request, 'main/recommendation.html', {
+                'error_message': "An error occurred while processing your request."
+            })
 
     # Render the form if not a POST request
     return render(request, 'main/recommendation.html')

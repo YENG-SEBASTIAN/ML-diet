@@ -1,54 +1,84 @@
 {% extends 'partials/base.html' %}
 
 {% block body_content %}
-<div class="container mt-4">
+
+
+<div class="container mt-5">
     <div class="row">
         <!-- Recommendation Form -->
-        <div class="col-md-6">
-            <h2 class="mb-4">Diet Recommendation Form</h2>
-            <form method="post" action="{% url 'recommend_diet' %}">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label for="bmi" class="form-label">Your BMI</label>
-                    <input type="number" step="0.1" id="bmi" name="bmi" class="form-control" placeholder="Enter your BMI" required>
+        <div class="col-md-5">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Diet Recommendation Form</h4>
                 </div>
-                <div class="mb-3">
-                    <label for="health_goal" class="form-label">Health Goal</label>
-                    <select id="health_goal" name="health_goal" class="form-select" required>
-                        <option value="" disabled selected>Select your health goal</option>
-                        <option value="gain weight">Gain Weight</option>
-                        <option value="lose weight">Lose Weight</option>
-                        <option value="maintain weight">Maintain Weight</option>
-                    </select>
+                <div class="card-body">
+                    <form method="post" action="{% url 'recommend_diet' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="bmi" class="form-label">Your BMI</label>
+                            <input type="number" step="0.1" id="bmi" name="bmi" class="form-control" placeholder="Enter your BMI" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="health_goal" class="form-label">Health Goal</label>
+                            <select id="health_goal" name="health_goal" class="form-select" required>
+                                <option value="" disabled selected>Select your health goal</option>
+                                <option value="gain weight">Gain Weight</option>
+                                <option value="lose weight">Lose Weight</option>
+                                <option value="maintain weight">Maintain Weight</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Get Recommendations</button>
+                    </form>
                 </div>
-                <button type="submit" class="btn btn-primary">Get Recommendations</button>
-            </form>
+            </div>
         </div>
 
         <!-- Recommendation Results -->
-        <div class="col-md-6">
-            <h2 class="mb-4">Recommended Diets</h2>
-            {% if recommended_diets %}
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Meal Type</th>
-                            <th>Calories (kcal)</th>
-                            <th>Protein (g)</th>
-                            <th>Carbs (g)</th>
-                            <th>Fat (g)</th>
-                            <th>BMI</th>
-                            <th>Recommended Diet</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                       
-                    </tbody>
-                </table>
-            {% else %}
-                <p class="text-muted">Submit the form to see your recommended diets.</p>
-            {% endif %}
+        <div class="col-md-7 mt-4 mt-md-0">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Recommended Diets</h4>
+                    {% if recommended_diets %}
+                        <span class="badge bg-light text-success">{{ recommended_diets|length }} Results</span>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% if recommended_diets %}
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Meal Type</th>
+                                        <th>Calories (kcal)</th>
+                                        <th>Protein (g)</th>
+                                        <th>Carbs (g)</th>
+                                        <th>Fat (g)</th>
+                                        <th>BMI Category</th>
+                                        <th>Recommended Diet</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for diet in recommended_diets %}
+                                        <tr>
+                                            <td>{{ diet.Meal_Type }}</td>
+                                            <td>{{ diet.Calories_kcal }}</td>
+                                            <td>{{ diet.Protein_g }}</td>
+                                            <td>{{ diet.Carbs_g }}</td>
+                                            <td>{{ diet.Fat_g }}</td>
+                                            <td>{{ diet.BMI_Category }}</td>
+                                            <td>{{ diet.Predicted_Diet }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">Submit the form to see your recommended diets.</p>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
 </div>
 {% endblock %}
+
