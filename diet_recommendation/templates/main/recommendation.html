@@ -1,7 +1,7 @@
+{# templates/main/recommendation.html #}
 {% extends 'partials/base.html' %}
 
 {% block body_content %}
-
 
 <div class="container mt-5">
     <div class="row">
@@ -48,25 +48,25 @@
                             <table class="table table-bordered table-hover">
                                 <thead class="table-light">
                                     <tr>
-                                        <th>Meal Type</th>
+                                        <th>Recommended Diet</th>
                                         <th>Calories (kcal)</th>
                                         <th>Protein (g)</th>
                                         <th>Carbs (g)</th>
                                         <th>Fat (g)</th>
+                                        <th>BMI</th>
                                         <th>BMI Category</th>
-                                        <th>Recommended Diet</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for diet in recommended_diets %}
                                         <tr>
-                                            <td>{{ diet.Meal_Type }}</td>
+                                            <td>{{ diet.Predicted_Diet }}</td>
                                             <td>{{ diet.Calories_kcal }}</td>
                                             <td>{{ diet.Protein_g }}</td>
                                             <td>{{ diet.Carbs_g }}</td>
                                             <td>{{ diet.Fat_g }}</td>
+                                            <td>{{ diet.BMI }}</td>
                                             <td>{{ diet.BMI_Category }}</td>
-                                            <td>{{ diet.Predicted_Diet }}</td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
@@ -81,4 +81,3 @@
     </div>
 </div>
 {% endblock %}
-

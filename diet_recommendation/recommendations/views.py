@@ -4,10 +4,9 @@ from django.contrib.auth.decorators import login_required
 from recommendations.models import Recommendation, UserRecommendationHistory
 from account.models import UserProfile
 import json
-from django.http import HttpResponseBadRequest
 import logging
 
-from recommendations.ml_model import recommend_diets
+from recommendations.ml_model import recommend_diets, predict_diets
 
 logger = logging.getLogger(__name__)
 
@@ -60,30 +59,37 @@ def dashboard_view(request):
     return render(request, 'main/dashboard.html', context)
 
 
-
-
-def diet_recommendation_view(request):
+def get_diet_recommendations(request):
     if request.method == 'POST':
+        user_bmi = request.POST.get('bmi')
+        health_goal = request.POST.get('health_goal')
+
+        if not user_bmi or not health_goal:
+            messages.warning(request, "BMI and health goal are required.")
+            return render(request, 'main/recommendation.html')
+
         try:
-            # Retrieve and validate user input from the form
-            user_bmi = request.POST.get('bmi')
-            health_goal = request.POST.get('health_goal')
+            user_bmi = float(user_bmi)
+        except ValueError:
+            messages.error(request, "Invalid BMI value.")
+            return render(request, 'main/recommendation.html')
 
-            if not user_bmi or not health_goal:
-                messages.warning(request, "BMI and health goal are required.")
-
-            try:
-                user_bmi = float(user_bmi)
-            except ValueError:
-                messages.error(request, "Invalid BMI value.")
-
+        try:
             # Get diet recommendations
             recommended_diets = recommend_diets(user_bmi, health_goal, n_recommendations=10)
-            print(recommended_diets)
-            # Render the results in the template
-            return render(request, 'main/recommendation.html', {
-                'recommended_diets': recommended_diets
-            })
+            
+            # Predict diet types
+            predicted_diets = predict_diets(recommended_diets)
+            if recommended_diets.empty:
+                messages.info(request, "No diets found based on the provided criteria.")
+            else:
+                # Convert DataFrame to a list of dictionaries for rendering
+                context = {
+                    'recommended_diets': predicted_diets.to_dict(orient='records')
+                }
+
+
+            return render(request, 'main/recommendation.html', context)
 
         except Exception as e:
             logger.error(f"Error in diet recommendation view: {e}")
@@ -91,8 +97,8 @@ def diet_recommendation_view(request):
                 'error_message': "An error occurred while processing your request."
             })
 
-    # Render the form if not a POST request
     return render(request, 'main/recommendation.html')
+
 
 
 def settings(request):
