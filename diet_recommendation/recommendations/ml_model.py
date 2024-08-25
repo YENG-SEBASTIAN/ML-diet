@@ -48,6 +48,8 @@ def recommend_diets(user_bmi, health_goal, n_recommendations=10):
 
     return recommended_diets.head(n_recommendations)
 
+
+
 def predict_diets(recommended_diets):
     features = ['Calories (kcal)', 'Protein (g)', 'Carbs (g)', 'Fat (g)', 'BMI']
     
@@ -75,4 +77,12 @@ def predict_diets(recommended_diets):
     # Add the predicted diet type to the recommended_diets DataFrame
     recommended_diets['Predicted_Diet'] = y_pred_decoded_sample
 
-    return recommended_diets[['Predicted_Diet', 'Calories (kcal)', 'Protein (g)', 'Carbs (g)', 'Fat (g)', 'BMI']]
+    # Rename columns to be template-friendly (no spaces or special characters)
+    recommended_diets = recommended_diets.rename(columns={
+        'Calories (kcal)': 'Calories_kcal',
+        'Protein (g)': 'Protein_g',
+        'Carbs (g)': 'Carbs_g',
+        'Fat (g)': 'Fat_g',
+    })
+
+    return recommended_diets[['Predicted_Diet', 'Calories_kcal', 'Protein_g', 'Carbs_g', 'Fat_g', 'BMI']]

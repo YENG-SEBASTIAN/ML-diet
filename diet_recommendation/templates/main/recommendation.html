@@ -54,19 +54,17 @@
                                         <th>Carbs (g)</th>
                                         <th>Fat (g)</th>
                                         <th>BMI</th>
-                                        <th>BMI Category</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for diet in recommended_diets %}
                                         <tr>
-                                            <td>{{ diet.Predicted_Diet }}</td>
-                                            <td>{{ diet.Calories_kcal }}</td>
-                                            <td>{{ diet.Protein_g }}</td>
-                                            <td>{{ diet.Carbs_g }}</td>
-                                            <td>{{ diet.Fat_g }}</td>
-                                            <td>{{ diet.BMI }}</td>
-                                            <td>{{ diet.BMI_Category }}</td>
+                                            <td>{{ diet.recommended_diet }}</td>
+                                            <td>{{ diet.calories }}</td>
+                                            <td>{{ diet.protein }}</td>
+                                            <td>{{ diet.carbs }}</td>
+                                            <td>{{ diet.fat }}</td>
+                                            <td>{{ diet.bmi_at_time }}</td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
@@ -80,4 +78,5 @@
         </div>
     </div>
 </div>
+
 {% endblock %}
