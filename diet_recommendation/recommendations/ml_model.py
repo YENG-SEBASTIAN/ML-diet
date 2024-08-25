@@ -75,4 +75,4 @@ def predict_diets(recommended_diets):
     # Add the predicted diet type to the recommended_diets DataFrame
     recommended_diets['Predicted_Diet'] = y_pred_decoded_sample
 
-    return recommended_diets[['Predicted_Diet', 'Calories (kcal)', 'Protein (g)', 'Carbs (g)', 'Fat (g)', 'BMI', 'BMI Category']]
+    return recommended_diets[['Predicted_Diet', 'Calories (kcal)', 'Protein (g)', 'Carbs (g)', 'Fat (g)', 'BMI']]
