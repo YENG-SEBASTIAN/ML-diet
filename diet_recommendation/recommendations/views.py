@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.views import View
+from django.db.models import Count, Avg, Sum
 from django.contrib.auth.decorators import login_required
 from recommendations.models import Recommendation, UserRecommendationHistory
 from account.models import UserProfile
@@ -60,6 +61,7 @@ def dashboard_view(request):
     return render(request, 'main/dashboard.html', context)
 
 
+
 class DietRecommendationView(View):
     template_name = 'main/recommendation.html'
 
@@ -75,20 +77,32 @@ class DietRecommendationView(View):
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-        user_bmi = request.POST.get('bmi')
+        height = request.POST.get('height')
+        weight = request.POST.get('weight')
         health_goal = request.POST.get('health_goal')
 
-        if not user_bmi or not health_goal:
-            messages.warning(request, "BMI and health goal are required.")
+        if not height or not weight or not health_goal:
+            messages.warning(request, "Height, weight, and health goal are required.")
             return redirect('recommend_diet')
 
         try:
-            user_bmi = float(user_bmi)
+            height = float(height)
+            weight = float(weight)
         except ValueError:
-            messages.error(request, "Invalid BMI value.")
+            messages.error(request, "Invalid height or weight value.")
             return redirect('recommend_diet')
 
         try:
+            # Update or create the UserProfile
+            user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+            user_profile.weight = weight
+            user_profile.height = height
+            user_profile.health_goal = health_goal
+            user_profile.save()
+
+            # Calculate BMI from UserProfile
+            user_bmi = user_profile.bmi
+
             # Get diet recommendations
             recommended_diets = recommend_diets(user_bmi, health_goal, n_recommendations=10)
             
@@ -108,7 +122,7 @@ class DietRecommendationView(View):
                     protein=row['Protein_g'],
                     carbs=row['Carbs_g'],
                     fat=row['Fat_g'],
-                    bmi_at_time=row['BMI'],  # Use the input BMI value
+                    bmi_at_time=row['BMI'],
                 )
             
             # Query the last 10 recommendations for the user, ordered by recommendation_date
@@ -131,3 +145,41 @@ class DietRecommendationView(View):
 
 def settings(request):
     return render(request, 'main/settings.html')
+
+class DietPlainView(View):
+    template_name = 'main/diet_plain.html'
+
+    def get(self, request, *args, **kwargs):
+        # Query the last 10 recommendations for the user, ordered by recommendation_date
+        recent_recommendations = Recommendation.objects.filter(
+            user=request.user
+        ).order_by('-recommendation_date')[:10]
+        
+        context = {
+            'recommended_diets': recent_recommendations
+        }
+        return render(request, self.template_name, context)
+
+
+def metrics(request):
+    return render(request, 'main/settings.html')
+
+class RecommendationMetricsView(View):
+    template_name = 'main/recommendation_metrics.html'
+
+    def get(self, request, *args, **kwargs):
+        # Calculate metrics
+        total_recommendations = Recommendation.objects.count()
+        avg_calories = Recommendation.objects.aggregate(Avg('calories'))['calories__avg']
+        avg_protein = Recommendation.objects.aggregate(Avg('protein'))['protein__avg']
+        avg_carbs = Recommendation.objects.aggregate(Avg('carbs'))['carbs__avg']
+        avg_fat = Recommendation.objects.aggregate(Avg('fat'))['fat__avg']
+
+        context = {
+            'total_recommendations': total_recommendations,
+            'avg_calories': avg_calories,
+            'avg_protein': avg_protein,
+            'avg_carbs': avg_carbs,
+            'avg_fat': avg_fat,
+        }
+        return render(request, self.template_name, context)

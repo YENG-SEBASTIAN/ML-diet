@@ -65,19 +65,10 @@
           <li class="nav-item">
             <a
               class="nav-link menu-link"
-              href="#sidebarDashboards"
+              href="{% url 'diet_plan' %}"
             >
             <i class='bx bxs-heart'></i>
-              <span data-key="t-dashboards">Health Goals</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a
-              class="nav-link menu-link"
-              href="#sidebarDashboards"
-            >
-            <i class='bx bx-bowl-rice'></i>
-              <span data-key="t-dashboards">Recipes</span>
+              <span data-key="t-dashboards">Diet Plan</span>
             </a>
           </li>
           <li class="menu-title"><span data-key="t-menu">settings</span></li>
@@ -94,10 +85,10 @@
           <li class="nav-item">
             <a
               class="nav-link menu-link"
-              href="#sidebarDashboards"
+              href="{% url 'recommendation_metrics' %}"
             >
-            <i class='bx bx-help-circle'></i>
-              <span data-key="t-dashboards">Help & Support</span>
+            <i class='bx bx-chart'></i>
+              <span data-key="t-dashboards">Metrics</span>
             </a>
           </li>
 

@@ -1,40 +1,53 @@
-{# templates/main/recommendation.html #}
 {% extends 'partials/base.html' %}
 
 {% block body_content %}
 
 <div class="container mt-5">
     <div class="row">
-        <!-- Recommendation Form -->
-        <div class="col-md-5">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Diet Recommendation Form</h4>
-                </div>
-                <div class="card-body">
-                    <form method="post" action="{% url 'recommend_diet' %}">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label for="bmi" class="form-label">Your BMI</label>
-                            <input type="number" step="0.1" id="bmi" name="bmi" class="form-control" placeholder="Enter your BMI" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="health_goal" class="form-label">Health Goal</label>
-                            <select id="health_goal" name="health_goal" class="form-select" required>
-                                <option value="" disabled selected>Select your health goal</option>
-                                <option value="gain weight">Gain Weight</option>
-                                <option value="lose weight">Lose Weight</option>
-                                <option value="maintain weight">Maintain Weight</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-success w-100">Get Recommendations</button>
-                    </form>
+        <!-- Recommendation Button -->
+        <div class="col-md-12 text-center mb-4">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recommendationModal">
+                Make a Recommendation
+            </button>
+        </div>
+
+        <!-- Recommendation Modal -->
+        <div class="modal fade" id="recommendationModal" tabindex="-1" aria-labelledby="recommendationModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="recommendationModalLabel">Diet Recommendation Form</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" action="{% url 'recommend_diet' %}" id="recommendationForm">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="height" class="form-label">Your Height (m)</label>
+                                <input type="number" step="0.1" id="height" name="height" class="form-control" placeholder="Enter your Height" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="weight" class="form-label">Your Weight (kg)</label>
+                                <input type="number" step="0.1" id="weight" name="weight" class="form-control" placeholder="Enter your Weight" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="health_goal" class="form-label">Health Goal</label>
+                                <select id="health_goal" name="health_goal" class="form-select" required>
+                                    <option value="" disabled selected>Select your health goal</option>
+                                    <option value="gain weight">Gain Weight</option>
+                                    <option value="lose weight">Lose Weight</option>
+                                    <option value="maintain weight">Maintain Weight</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">Get Recommendations</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Recommendation Results -->
-        <div class="col-md-7 mt-4 mt-md-0">
+        <div class="col-md-12 mt-4">
             <div class="card shadow-sm">
                 <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
                     <h4 class="mb-0">Recommended Diets</h4>
@@ -45,7 +58,7 @@
                 <div class="card-body">
                     {% if recommended_diets %}
                         <div class="table-responsive">
-                            <table class="table table-bordered table-hover">
+                            <table class="table table-bordered table-hover w-100">
                                 <thead class="table-light">
                                     <tr>
                                         <th>Recommended Diet</th>
@@ -79,4 +92,20 @@
     </div>
 </div>
 
+<!-- Loading Spinner -->
+<div class="position-fixed top-50 start-50 translate-middle d-none" id="loadingSpinner">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Show spinner on form submit
+    document.getElementById('recommendationForm').addEventListener('submit', function() {
+        document.getElementById('loadingSpinner').classList.remove('d-none');
+    });
+</script>
 {% endblock %}

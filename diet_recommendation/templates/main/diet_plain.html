@@ -1,0 +1,55 @@
+{% extends 'partials/base.html' %}
+
+{% block body_content %}
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Diet Recommendations Table -->
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Last 10 Recommended Diets</h4>
+                    {% if recommended_diets %}
+                        <span class="badge bg-light text-success">{{ recommended_diets|length }} Results</span>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% if recommended_diets %}
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover w-100">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Recommended Diet</th>
+                                        <th>Calories (kcal)</th>
+                                        <th>Protein (g)</th>
+                                        <th>Carbs (g)</th>
+                                        <th>Fat (g)</th>
+                                        <th>BMI</th>
+                                        <th>Recommendation Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for diet in recommended_diets %}
+                                        <tr>
+                                            <td>{{ diet.recommended_diet }}</td>
+                                            <td>{{ diet.calories }}</td>
+                                            <td>{{ diet.protein }}</td>
+                                            <td>{{ diet.carbs }}</td>
+                                            <td>{{ diet.fat }}</td>
+                                            <td>{{ diet.bmi_at_time }}</td>
+                                            <td>{{ diet.recommendation_date|date:"Y-m-d H:i" }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No recommendations found.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

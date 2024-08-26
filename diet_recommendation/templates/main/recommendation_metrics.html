@@ -1,0 +1,50 @@
+{% extends 'partials/base.html' %}
+
+{% block body_content %}
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Recommendation Metrics -->
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Recommendation Model Metrics</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Metric</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Total Recommendations</td>
+                                <td>{{ total_recommendations }}</td>
+                            </tr>
+                            <tr>
+                                <td>Average Calories (kcal)</td>
+                                <td>{{ avg_calories|floatformat:2 }}</td>
+                            </tr>
+                            <tr>
+                                <td>Average Protein (g)</td>
+                                <td>{{ avg_protein|floatformat:2 }}</td>
+                            </tr>
+                            <tr>
+                                <td>Average Carbs (g)</td>
+                                <td>{{ avg_carbs|floatformat:2 }}</td>
+                            </tr>
+                            <tr>
+                                <td>Average Fat (g)</td>
+                                <td>{{ avg_fat|floatformat:2 }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
