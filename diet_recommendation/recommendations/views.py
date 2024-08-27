@@ -142,7 +142,7 @@ class DietRecommendationView(View):
             return redirect('recommend_diet')
 
 
-
+@login_required
 def settings(request):
     return render(request, 'main/settings.html')
 
@@ -161,8 +161,6 @@ class DietPlainView(View):
         return render(request, self.template_name, context)
 
 
-def metrics(request):
-    return render(request, 'main/settings.html')
 
 class RecommendationMetricsView(View):
     template_name = 'main/recommendation_metrics.html'

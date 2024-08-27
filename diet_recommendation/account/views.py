@@ -1,5 +1,4 @@
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
-from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.models import User
@@ -8,6 +7,10 @@ from django.urls import reverse
 import re
 from account.forms import UserProfileForm
 from account.models import UserProfile
+from django.contrib.auth.views import (PasswordResetView, PasswordResetConfirmView, PasswordResetCompleteView, 
+                                       PasswordResetDoneView, PasswordChangeView, PasswordChangeDoneView)
+from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
 
 def signup(request):
     if request.method == 'POST':
@@ -92,3 +95,29 @@ def update_profile(request):
 @login_required
 def profile_update_success(request):
     return render(request, 'main/profile_update_success.html')
+
+
+class CustomPasswordResetView(PasswordResetView):
+    template_name = 'auth/password_reset.html'
+    success_url = reverse_lazy('login')
+
+    def form_valid(self, form):
+        messages.success(self.request, "Password reset link has been sent to your email.")
+        return super().form_valid(form)
+
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    template_name = 'auth/password_reset_confirm.html'
+    success_url = reverse_lazy('login')
+
+    def form_valid(self, form):
+        messages.success(self.request, "Your password has been reset successfully. You can now log in.")
+        return super().form_valid(form)
+
+@method_decorator(login_required, name='dispatch')
+class CustomPasswordChangeView(PasswordChangeView):
+    template_name = 'main/settings.html'
+    success_url = reverse_lazy('dashboard')
+
+    def form_valid(self, form):
+        messages.success(self.request, "Your password has been changed successfully.")
+        return super().form_valid(form)

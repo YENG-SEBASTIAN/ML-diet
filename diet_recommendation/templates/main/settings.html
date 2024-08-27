@@ -63,7 +63,7 @@
                 <div class="card-body p-4">
                     <div class="tab-content">
                         <div class="tab-pane active" id="personalDetails" role="tabpanel">
-                            <form action="javascript:void(0);">
+                            <form action="">
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="mb-3">
@@ -95,7 +95,7 @@
                         </div>
                         <!--end tab-pane-->
                         <div class="tab-pane" id="changePassword" role="tabpanel">
-                            <form action="javascript:void(0);">
+                            <form action="{% url 'password_change' %}">
                                 <div class="row g-2">
                                     <div class="col-lg-4">
                                         <div>
@@ -118,13 +118,6 @@
                                             <label for="confirmpasswordInput" class="form-label">Confirm
                                                 Password*</label>
                                             <input type="password" class="form-control" id="confirmpasswordInput" placeholder="Confirm password">
-                                        </div>
-                                    </div>
-                                    <!--end col-->
-                                    <div class="col-lg-12">
-                                        <div class="mb-3">
-                                            <a href="javascript:void(0);" class="link-primary text-decoration-underline">Forgot
-                                                Password ?</a>
                                         </div>
                                     </div>
                                     <!--end col-->
