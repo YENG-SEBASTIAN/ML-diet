@@ -1,5 +1,15 @@
 {% extends 'partials/base.html' %}
 
+{% block title %}Recommendation{% endblock %}
+
+{% block extra_css %}
+    <!-- Add any additional CSS required for the page -->
+{% endblock %}
+
+{% block pagetitle %}
+    {% include "partials/page-title.html" with pagetitle="Recommendation Dashboard" title="Recommendations" %}
+{% endblock %}
+
 {% block body_content %}
 
 <div class="container mt-5">

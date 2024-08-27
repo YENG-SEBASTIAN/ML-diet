@@ -1,5 +1,16 @@
 {% extends 'partials/base.html' %}
 
+{% block title %}Deit plan{% endblock %}
+
+{% block extra_css %}
+    <!-- Add any additional CSS required for the page -->
+{% endblock %}
+
+{% block pagetitle %}
+    {% include "partials/page-title.html" with pagetitle="Diet Plan Dashboard" title="Diet Plan" %}
+{% endblock %}
+
+
 {% block body_content %}
 
 <div class="container mt-5">
