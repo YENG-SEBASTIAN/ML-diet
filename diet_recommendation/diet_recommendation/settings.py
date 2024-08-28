@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'recommendations',
     'import_export',
 ]
+AUTH_USER_MODEL = 'account.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -113,12 +114,16 @@ USE_I18N = True
 
 USE_TZ = True
 
+LOGIN_REDIRECT = "dashboard"
+LOGOUT_REDIRECT = "login"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Centralized static files folder
 STATICFILES_DIRS = [

@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.contrib.auth.models import User
+from account.models import User
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 import re
@@ -115,7 +115,6 @@ class CustomPasswordResetConfirmView(PasswordResetConfirmView):
 
 @method_decorator(login_required, name='dispatch')
 class CustomPasswordChangeView(PasswordChangeView):
-    template_name = 'main/settings.html'
     success_url = reverse_lazy('dashboard')
 
     def form_valid(self, form):
