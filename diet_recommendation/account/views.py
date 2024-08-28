@@ -79,22 +79,32 @@ def logout(request):
 
 @login_required
 def update_profile(request):
-    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
-    
     if request.method == 'POST':
-        form = UserProfileForm(request.POST, instance=user_profile)
-        if form.is_valid():
-            form.save()
-            return redirect('main/profile_update_success')  # Redirect to a success page or profile view
-    else:
-        form = UserProfileForm(instance=user_profile)
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        profile_image = request.FILES.get('profile_image')
 
-    return render(request, 'main/update_profile.html', {'form': form})
+        user = request.user
 
+        # Basic validation
+        if not username or not email:
+            messages.error(request, "Username and Email are required.")
+            return redirect('update_profile')
 
-@login_required
-def profile_update_success(request):
-    return render(request, 'main/profile_update_success.html')
+        try:
+            user.username = username
+            user.email = email
+
+            if profile_image:
+                user.profile_image = profile_image
+            
+            user.save()
+            messages.success(request, "Profile updated successfully.")
+        except Exception as e:
+            messages.error(request, f"An error occurred: {e}")
+            return redirect('update_profile')
+
+    return render(request, 'main/settings.html')
 
 
 class CustomPasswordResetView(PasswordResetView):
@@ -113,10 +123,14 @@ class CustomPasswordResetConfirmView(PasswordResetConfirmView):
         messages.success(self.request, "Your password has been reset successfully. You can now log in.")
         return super().form_valid(form)
 
-@method_decorator(login_required, name='dispatch')
 class CustomPasswordChangeView(PasswordChangeView):
-    success_url = reverse_lazy('dashboard')
+    template_name = 'main/settings.html'
+    success_url = reverse_lazy('settings')
 
     def form_valid(self, form):
         messages.success(self.request, "Your password has been changed successfully.")
         return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "There was an error with your submission. Please correct the errors below.")
+        return super().form_invalid(form)
