@@ -23,7 +23,6 @@ def dashboard_view(request):
         profile = UserProfile.objects.get(user=user)
     except UserProfile.DoesNotExist:
         messages.error(request, "User profile does not exist. Please complete your profile.")
-        return redirect('update_profile')  # Redirect to a profile update page if the profile does not exist
 
     # Query UserHealthHistroy for graph data
     health_history = UserHealthHistroy.objects.filter(user=request.user).order_by('id')
