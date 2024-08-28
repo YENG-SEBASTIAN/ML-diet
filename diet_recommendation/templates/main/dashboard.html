@@ -26,7 +26,7 @@
                         <div class="flex-grow-1 ms-3">
                             <p class="text-uppercase fw-medium text-muted mb-3">Body Mass Index</p>
                             <div class="d-flex align-items-center mb-3">
-                                <h4 class="fs-4 flex-grow-1 mb-0">{{ profile.bmi }}</h4>
+                                <h4 class="fs-4 flex-grow-1 mb-0">{% if profile.bmi %}{{ profile.bmi }}{%else%}0.0{%endif%}</h4>
                                 <span class="badge badge-soft-success fs-12"><i class="ri-arrow-up-s-line fs-13 align-middle me-1"></i> 1.2%</span>
                             </div>
                             <p class="text-muted mb-0">Current BMI</p>
@@ -49,7 +49,7 @@
                         <div class="flex-grow-1 ms-3">
                             <p class="text-uppercase fw-medium text-muted mb-3">Height</p>
                             <div class="d-flex align-items-center mb-3">
-                                <h4 class="fs-4 flex-grow-1 mb-0">{{ profile.height }} m</h4>
+                                <h4 class="fs-4 flex-grow-1 mb-0">{% if profile.height %}{{ profile.height }}{%else%}0.0{%endif%} m</h4>
                             </div>
                             <p class="text-muted mb-0">Height</p>
                         </div>
@@ -71,7 +71,7 @@
                         <div class="flex-grow-1 ms-3">
                             <p class="text-uppercase fw-medium text-muted mb-3">Weight</p>
                             <div class="d-flex align-items-center mb-3">
-                                <h4 class="fs-4 flex-grow-1 mb-0">{{ profile.weight }} kg</h4>
+                                <h4 class="fs-4 flex-grow-1 mb-0">{% if profile.weight %}{{ profile.weight }}{%else%}0.0{%endif%} kg</h4>
                             </div>
                             <p class="text-muted mb-0">Current Weight</p>
                         </div>
@@ -102,64 +102,16 @@
             </div>
         </div>
 
-        <!-- Card 5: Diet Recommendations Chart -->
-        <div class="col-xxl-12">
-            <div class="card card-height-100">
-                <div class="card-header align-items-center d-flex">
-                    <h4 class="card-title mb-0 flex-grow-1">Diet Recommendations Overview</h4>
-                </div>
-                <div class="card-body px-0">
-                    <!-- Progress Chart -->
-                    <div id="recommendation-chart" style="height: 350px;"></div>
-                </div>
-            </div>
+        <div>
+            {{ graph_html|safe }}
         </div>
+
+
     </div>
 {% endblock %}
 
 {% block extra_js %}
     <!-- ApexCharts JS -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <script>
-        var recommendationData = JSON.parse('{{ recommendation_data|escapejs }}');
 
-        var options = {
-            chart: {
-                height: 350,
-                type: 'line'
-            },
-            series: [{
-                name: 'Calories',
-                data: recommendationData.calories
-            }, {
-                name: 'Protein',
-                data: recommendationData.protein
-            }, {
-                name: 'Carbs',
-                data: recommendationData.carbs
-            }, {
-                name: 'Fat',
-                data: recommendationData.fat
-            }],
-            xaxis: {
-                categories: recommendationData.dates,
-                title: {
-                    text: 'Date'
-                }
-            },
-            yaxis: {
-                title: {
-                    text: 'Nutritional Values'
-                }
-            },
-            tooltip: {
-                shared: true,
-                intersect: false
-            },
-            colors: ['#0d6efd', '#dc3545', '#198754', '#fd7e14']
-        }
-
-        var chart = new ApexCharts(document.querySelector("#recommendation-chart"), options);
-        chart.render();
-    </script>
 {% endblock %}

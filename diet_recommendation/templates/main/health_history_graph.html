@@ -1,0 +1,11 @@
+{% extends 'partials/base.html' %}
+
+{% block body_content %}
+<h1>User Health History</h1>
+
+<!-- Render the graph -->
+<div>
+    {{ graph_html|safe }}
+</div>
+
+{% endblock %}

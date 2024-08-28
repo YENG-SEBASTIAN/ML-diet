@@ -1,7 +1,7 @@
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
 from recommendations.models import (Recommendation, DietPlan, UserRecommendationHistory, 
-                                    DietRecommendationDataset)
+                                    DietRecommendationDataset, UserHealthHistroy)
 from recommendations.resources import (RecommendationResource, DietPlanResource, 
                                        UserRecommendationHistoryResource, DietRecommendationDatasetResource
 )
@@ -31,3 +31,5 @@ class DietRecommendationAdmin(ImportExportModelAdmin):
     resource_class = DietRecommendationDatasetResource
     list_display = ('recommended_diet', 'calories_kcal', 'protein_g', 'carbs_g', 'fat_g', 'bmi', 'bmi_category')
     search_fields = ('recommended_diet', 'meal_type', 'bmi_category')
+
+admin.site.register(UserHealthHistroy)

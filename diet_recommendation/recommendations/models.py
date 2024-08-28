@@ -38,7 +38,16 @@ class UserRecommendationHistory(models.Model):
     def __str__(self):
         return f'History for {self.user.username} on {self.recommendation_date}'
 
-
+class UserHealthHistroy(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    weight = models.FloatField(null=True, blank=True)  # Weight in kilograms
+    height = models.FloatField(null=True, blank=True)  # Height in meters
+    bmi = models.FloatField(null=True, blank=True)
+    health_goal = models.CharField( max_length=50)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"Health histroy for {self.user.username}"
 
 
 class DietRecommendationDataset(models.Model):

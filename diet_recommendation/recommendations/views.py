@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.views import View
-from django.db.models import Count, Avg, Sum
+import plotly.graph_objs as go
+import plotly.offline as pyo
 from django.contrib.auth.decorators import login_required
-from recommendations.models import Recommendation, UserRecommendationHistory
+from recommendations.models import Recommendation, UserRecommendationHistory, UserHealthHistroy
 from account.models import UserProfile
 import json
 import logging
@@ -17,49 +18,49 @@ logger = logging.getLogger(__name__)
 @login_required
 def dashboard_view(request):
     user = request.user
-    
+
     # Try to get the user's profile
     try:
         profile = UserProfile.objects.get(user=user)
     except UserProfile.DoesNotExist:
         messages.error(request, "User profile does not exist. Please complete your profile.")
         return redirect('update_profile')  # Redirect to a profile update page if the profile does not exist
-    
-    # Try to get the latest recommendation
-    latest_recommendation = Recommendation.objects.filter(user=user).order_by('-recommendation_date').first()
-    if not latest_recommendation:
-        messages.warning(request, "No recommendation found. Please check back later or request one.")
-    
-    # Get user recommendation history (last 7 entries)
-    history = UserRecommendationHistory.objects.filter(user=user).order_by('-recommendation_date')[:7]
-    if not history:
-        messages.info(request, "No recommendation history available.")
-    
-    # Fetch recommendations for chart
-    recommendations = Recommendation.objects.filter(user=user).order_by('-recommendation_date')
-    recommendation_data = {
-        "dates": [],
-        "calories": [],
-        "protein": [],
-        "carbs": [],
-        "fat": []
-    }
-    for rec in recommendations:
-        recommendation_data["dates"].append(rec.recommendation_date.strftime('%Y-%m-%d'))
-        recommendation_data["calories"].append(rec.calories)
-        recommendation_data["protein"].append(rec.protein)
-        recommendation_data["carbs"].append(rec.carbs)
-        recommendation_data["fat"].append(rec.fat)
-    
+
+    # Query UserHealthHistroy for graph data
+    health_history = UserHealthHistroy.objects.filter(user=request.user).order_by('id')
+
+    # Initialize graph_html to ensure it is defined regardless of the condition
+    graph_html = ""
+
+    if health_history.exists():
+        # Extract data for plotting
+        dates = [history.created_at for history in health_history]
+        heights = [history.height for history in health_history]
+        weights = [history.weight for history in health_history]
+        bmis = [history.bmi for history in health_history]
+
+        # Create Plotly graph
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=dates, y=heights, mode='lines+markers', name='Height (meters)'))
+        fig.add_trace(go.Scatter(x=dates, y=weights, mode='lines+markers', name='Weight (kg)'))
+        fig.add_trace(go.Scatter(x=dates, y=bmis, mode='lines+markers', name='BMI'))
+
+        fig.update_layout(
+            title='User Health History',
+            xaxis_title='Date',
+            yaxis_title='Value',
+            legend_title='Metrics'
+        )
+
+        # Convert Plotly figure to HTML
+        graph_html = pyo.plot(fig, output_type='div')
+
     context = {
         'profile': profile,
-        'latest_recommendation': latest_recommendation,
-        'history': history,
-        'recommendation_data': json.dumps(recommendation_data)
+        'graph_html': graph_html,
     }
-    
-    return render(request, 'main/dashboard.html', context)
 
+    return render(request, 'main/dashboard.html', context)
 
 
 class DietRecommendationView(View):
@@ -98,7 +99,7 @@ class DietRecommendationView(View):
             user_profile.weight = weight
             user_profile.height = height
             user_profile.health_goal = health_goal
-            user_profile.save()
+            user_profile.save()  # This will trigger the signal to create UserHealthHistroy
 
             # Calculate BMI from UserProfile
             user_bmi = user_profile.bmi
@@ -167,17 +168,4 @@ class RecommendationMetricsView(View):
 
     def get(self, request, *args, **kwargs):
         # Calculate metrics
-        total_recommendations = Recommendation.objects.count()
-        avg_calories = Recommendation.objects.aggregate(Avg('calories'))['calories__avg']
-        avg_protein = Recommendation.objects.aggregate(Avg('protein'))['protein__avg']
-        avg_carbs = Recommendation.objects.aggregate(Avg('carbs'))['carbs__avg']
-        avg_fat = Recommendation.objects.aggregate(Avg('fat'))['fat__avg']
-
-        context = {
-            'total_recommendations': total_recommendations,
-            'avg_calories': avg_calories,
-            'avg_protein': avg_protein,
-            'avg_carbs': avg_carbs,
-            'avg_fat': avg_fat,
-        }
-        return render(request, self.template_name, context)
+        return render(request, self.template_name)
