@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-6xok+nipl@-+b3)(!nos1g+nkuq157n0u92w5$n_tof2sb3x1+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "ml-diet.onrender.com"]
 
 
 # Application definition
@@ -45,6 +45,7 @@ AUTH_USER_MODEL = 'account.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -52,6 +53,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 
 ROOT_URLCONF = 'diet_recommendation.urls'
 
@@ -127,20 +131,19 @@ LOGOUT_REDIRECT = "login"
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = '/static/'
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+STATIC_URL = '/static/'  # URL to use when referring to static files located in STATICFILES_DIRS
 
-# Centralized static files folder
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
+    BASE_DIR / 'static',  # Directory where the static files are located in the project
 ]
 
-# Static root for production (run 'collectstatic' to gather all static files here)
-STATIC_ROOT = BASE_DIR / 'static'
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # Directory to collect all static files when running `collectstatic`
 
-# STATIC_ROOT = BASE_DIR / 'staticfiles'
-# Default primary key field type
+# Media files (Uploaded files)
+MEDIA_URL = '/media/'  # URL to use when referring to media files
+MEDIA_ROOT = BASE_DIR / 'media'  # Directory where media files are stored
+
+
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
