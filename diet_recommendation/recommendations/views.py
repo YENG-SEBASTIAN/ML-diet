@@ -23,8 +23,7 @@ def dashboard_view(request):
     try:
         profile = UserProfile.objects.get(user=user)
     except UserProfile.DoesNotExist:
-        messages.error(request, "User profile does not exist. Please complete your profile.")
-        return redirect('update_profile')
+        messages.error(request, "Your profile values are still zeros. Please complete your profile at the settings.")
     
     # Query UserHealthHistroy for graph data
     health_history = UserHealthHistroy.objects.filter(user=request.user).order_by('id')
@@ -45,7 +44,7 @@ def dashboard_view(request):
     # Create Plotly graph
     fig = go.Figure()
 
-    # Always add traces, even if they are empty
+    # Add traces for graph
     fig.add_trace(go.Scatter(x=dates, y=heights, mode='lines+markers', name='Height (meters)'))
     fig.add_trace(go.Scatter(x=dates, y=weights, mode='lines+markers', name='Weight (kg)'))
     fig.add_trace(go.Scatter(x=dates, y=bmis, mode='lines+markers', name='BMI'))
@@ -63,6 +62,7 @@ def dashboard_view(request):
     context = {
         'profile': profile,
         'graph_html': graph_html,
+        'target_weight': profile.target_weight,
     }
 
     return render(request, 'main/dashboard.html', context)

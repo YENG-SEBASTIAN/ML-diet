@@ -13,8 +13,53 @@
 
 {% block body_content %}
     <div class="row g-4">
-        <!-- Card 1: BMI -->
-        <div class="col-xl-3">
+
+        <!-- Card 1: Target Weight -->
+        <div class="col-xl-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-soft-info text-info rounded-2 fs-2">
+                                <i class="bx bx-target-lock"></i>
+                            </span>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <p class="text-uppercase fw-medium text-muted mb-3">Your Target Weight</p>
+                            <div class="d-flex align-items-center mb-3">
+                                <h4 class="fs-4 flex-grow-1 mb-0">{% if target_weight %}{{ target_weight }}{% else %}0.0{% endif %} kg</h4>
+                            </div>
+                            <p class="text-muted mb-0">Your Goal Weight</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2: Health Goal -->
+        <div class="col-xl-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-soft-info text-info rounded-2 fs-2">
+                                <i class='bx bxs-check-shield'></i>
+                            </span>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <p class="text-uppercase fw-medium text-muted mb-3">Your Target Health Goal</p>
+                            <div class="d-flex align-items-center mb-3">
+                                <h4 class="fs-4 flex-grow-1 mb-0">{{ profile.health_goal|capfirst }}</h4>
+                            </div>
+                            <p class="text-muted mb-0">My Goal</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 3: BMI -->
+        <div class="col-xl-4">
             <div class="card card-animate">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
@@ -26,7 +71,7 @@
                         <div class="flex-grow-1 ms-3">
                             <p class="text-uppercase fw-medium text-muted mb-3">Body Mass Index</p>
                             <div class="d-flex align-items-center mb-3">
-                                <h4 class="fs-4 flex-grow-1 mb-0">{% if profile.bmi %}{{ profile.bmi }}{%else%}0.0{%endif%}</h4>
+                                <h4 class="fs-4 flex-grow-1 mb-0">{% if profile.bmi %}{{ profile.bmi }}{% else %}0.0{% endif %}</h4>
                                 <span class="badge badge-soft-success fs-12"><i class="ri-arrow-up-s-line fs-13 align-middle me-1"></i> 1.2%</span>
                             </div>
                             <p class="text-muted mb-0">Current BMI</p>
@@ -36,8 +81,8 @@
             </div>
         </div>
 
-        <!-- Card 2: Height -->
-        <div class="col-xl-3">
+        <!-- Card 4: Height -->
+        <div class="col-xl-4">
             <div class="card card-animate">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
@@ -49,7 +94,7 @@
                         <div class="flex-grow-1 ms-3">
                             <p class="text-uppercase fw-medium text-muted mb-3">Height</p>
                             <div class="d-flex align-items-center mb-3">
-                                <h4 class="fs-4 flex-grow-1 mb-0">{% if profile.height %}{{ profile.height }}{%else%}0.0{%endif%} m</h4>
+                                <h4 class="fs-4 flex-grow-1 mb-0">{% if profile.height %}{{ profile.height }}{% else %}0.0{% endif %} m</h4>
                             </div>
                             <p class="text-muted mb-0">Height</p>
                         </div>
@@ -58,20 +103,20 @@
             </div>
         </div>
 
-        <!-- Card 3: Weight -->
-        <div class="col-xl-3">
+        <!-- Card 5: Weight -->
+        <div class="col-xl-4">
             <div class="card card-animate">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="avatar-sm flex-shrink-0">
                             <span class="avatar-title bg-soft-info text-info rounded-2 fs-2">
-                                <i data-feather="weight" class="text-info"></i>
+                                <i class="bx bx-target-lock"></i>
                             </span>
                         </div>
                         <div class="flex-grow-1 ms-3">
                             <p class="text-uppercase fw-medium text-muted mb-3">Weight</p>
                             <div class="d-flex align-items-center mb-3">
-                                <h4 class="fs-4 flex-grow-1 mb-0">{% if profile.weight %}{{ profile.weight }}{%else%}0.0{%endif%} kg</h4>
+                                <h4 class="fs-4 flex-grow-1 mb-0">{% if profile.weight %}{{ profile.weight }}{% else %}0.0{% endif %} kg</h4>
                             </div>
                             <p class="text-muted mb-0">Current Weight</p>
                         </div>
@@ -80,38 +125,28 @@
             </div>
         </div>
 
-        <!-- Card 4: Health Goal -->
-        <div class="col-xl-3">
+
+        <!-- Graph Card -->
+        <div class="col-xl-12">
             <div class="card card-animate">
                 <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="avatar-sm flex-shrink-0">
-                            <span class="avatar-title bg-soft-info text-info rounded-2 fs-2">
-                                <i class='bx bxs-check-shield'></i>
-                            </span>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <p class="text-uppercase fw-medium text-muted mb-3">Health Goal</p>
-                            <div class="d-flex align-items-center mb-3">
-                                <h4 class="fs-4 flex-grow-1 mb-0">{{ profile.health_goal|capfirst }}</h4>
-                            </div>
-                            <p class="text-muted mb-0">My Goal</p>
-                        </div>
-                    </div>
+                    <h5 class="card-title">Health Data Graph</h5>
+                    <p class="text-muted mb-3">
+                        The graph below represents your health data over time:
+                        <ul>
+                            <li><strong class="text-secondary">Height (meters):</strong> The line shows your height measurements. An upward trend indicates an increase in height, while a downward trend could signify a data entry issue.</li>
+                            <li><strong class="text-danger">Weight (kg):</strong> The line indicates your weight changes. A rising line suggests weight gain, while a falling line shows weight loss. Monitor it to ensure you are on track with your health goals.</li>
+                            <li><strong class="text-success">BMI:</strong> The line represents your Body Mass Index. If it is increasing, it might indicate weight gain or a decrease in height. Conversely, a decreasing BMI could suggest weight loss or other changes.</li>
+                        </ul>
+                    </p>
+                    {{ graph_html|safe }}
                 </div>
             </div>
         </div>
-
-        <div>
-            {{ graph_html|safe }}
-        </div>
-
-
     </div>
 {% endblock %}
 
 {% block extra_js %}
     <!-- ApexCharts JS -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-
 {% endblock %}
