@@ -14,7 +14,7 @@ class UserProfile(models.Model):
         ('lose weight', 'Lose Weight'),
         ('maintain weight', 'Maintain Weight'),
     ]
-     
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bmi = models.FloatField(null=True, blank=True)
     health_goal = models.CharField(
@@ -23,12 +23,21 @@ class UserProfile(models.Model):
     )
     weight = models.FloatField(null=True, blank=True)  # Weight in kilograms
     height = models.FloatField(null=True, blank=True)  # Height in meters
+    target_weight = models.FloatField(null=True, blank=True)  # Target weight in kilograms
+    health_condition = models.TextField(null=True, blank=True)  # Health conditions, separated by commas
+    allergies = models.TextField(null=True, blank=True)  # Allergies, separated by commas
 
     def __str__(self):
         return f'{self.user.username} Profile'
 
     def save(self, *args, **kwargs):
-        # Calculate BMI if weight and height are provided
-        if self.weight and self.height:
-            self.bmi = round(self.weight / (self.height ** 2), 1)
+        # Convert weight and height to float if they are not None
+        try:
+            if self.weight and self.height:
+                self.weight = float(self.weight)
+                self.height = float(self.height)
+                self.bmi = round(self.weight / (self.height ** 2), 1)
+        except (ValueError, TypeError):
+            # Handle the case where conversion fails (e.g., non-numeric values)
+            self.bmi = None
         super().save(*args, **kwargs)

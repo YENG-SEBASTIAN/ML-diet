@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 import plotly.graph_objs as go
 import plotly.offline as pyo
 from django.contrib.auth.decorators import login_required
-from recommendations.models import Recommendation, UserRecommendationHistory, UserHealthHistroy
+from recommendations.models import Recommendation,  UserHealthHistroy
 from account.models import UserProfile
 import logging
 from django.shortcuts import render
@@ -23,7 +24,8 @@ def dashboard_view(request):
         profile = UserProfile.objects.get(user=user)
     except UserProfile.DoesNotExist:
         messages.error(request, "User profile does not exist. Please complete your profile.")
-
+        return redirect('update_profile')
+    
     # Query UserHealthHistroy for graph data
     health_history = UserHealthHistroy.objects.filter(user=request.user).order_by('id')
 
@@ -65,7 +67,7 @@ def dashboard_view(request):
 
     return render(request, 'main/dashboard.html', context)
 
-class DietRecommendationView(View):
+class DietRecommendationView(LoginRequiredMixin, View):
     template_name = 'main/recommendation.html'
 
     def get(self, request, *args, **kwargs):
@@ -146,9 +148,14 @@ class DietRecommendationView(View):
 
 @login_required
 def settings(request):
-    return render(request, 'main/settings.html')
+    user_profile = UserProfile.objects.get(user=request.user)
+    print("user_profile", user_profile)
+    context = {
+        'userprofile': user_profile,
+    }
+    return render(request, 'main/settings.html', context)
 
-class DietPlainView(View):
+class DietPlainView(LoginRequiredMixin, View):
     template_name = 'main/diet_plain.html'
 
     def get(self, request, *args, **kwargs):
@@ -164,8 +171,7 @@ class DietPlainView(View):
 
 
 
-class RecommendationMetricsView(View):
+class RecommendationMetricsView(LoginRequiredMixin, View):
     template_name = 'main/recommendation_metrics.html'
-
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name)

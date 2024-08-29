@@ -5,12 +5,9 @@ from account.models import User
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 import re
-from account.forms import UserProfileForm
 from account.models import UserProfile
-from django.contrib.auth.views import (PasswordResetView, PasswordResetConfirmView, PasswordResetCompleteView, 
-                                       PasswordResetDoneView, PasswordChangeView, PasswordChangeDoneView)
+from django.contrib.auth.views import (PasswordResetView, PasswordResetConfirmView, PasswordChangeView)
 from django.urls import reverse_lazy
-from django.utils.decorators import method_decorator
 
 def signup(request):
     if request.method == 'POST':
@@ -105,6 +102,85 @@ def update_profile(request):
             return redirect('update_profile')
 
     return render(request, 'main/settings.html')
+
+
+@login_required
+def update_account_details(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        profile_image = request.FILES.get('profile_image')
+
+        request.user.username = username
+        request.user.email = email
+        request.user.save()
+
+        user_profile = UserProfile.objects.get(user=request.user)
+        if profile_image:
+            user_profile.profile_image = profile_image
+            user_profile.save()
+
+        messages.success(request, 'Account details updated successfully.')
+        return redirect('settings')
+    return render(request, 'main/settings.html')
+
+
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        old_password = request.POST.get('old_password')
+        new_password1 = request.POST.get('new_password1')
+        new_password2 = request.POST.get('new_password2')
+
+        if new_password1 == new_password2:
+            if request.user.check_password(old_password):
+                request.user.set_password(new_password1)
+                request.user.save()
+                messages.success(request, 'Password changed successfully.')
+                return redirect('settings')
+            else:
+                messages.error(request, 'Old password is incorrect.')
+        else:
+            messages.error(request, 'New passwords do not match.')
+
+    return render(request, 'main/settings.html')
+
+@login_required
+def update_user_profile_info(request):
+    user_profile = UserProfile.objects.get(user=request.user)
+
+    if request.method == 'POST':
+        weight = request.POST.get('weight')
+        height = request.POST.get('height')
+        health_goal = request.POST.get('health_goal')
+        target_weight = request.POST.get('target_weight')
+        health_condition = request.POST.get('health_condition')
+        allergies = request.POST.get('allergies')
+
+        try:
+            weight = float(weight) if weight else None
+            height = float(height) if height else None
+            target_weight = float(target_weight) if target_weight else None
+        except ValueError:
+            messages.error(request, 'Invalid input for weight or height.')
+            return redirect('update_user_profile_info')
+
+        user_profile.weight = weight
+        user_profile.height = height
+        user_profile.health_goal = health_goal
+        user_profile.target_weight = target_weight
+        user_profile.health_condition = health_condition
+        user_profile.allergies = allergies
+        user_profile.save()
+
+        messages.success(request, 'User profile updated successfully.')
+        return redirect('settings')
+
+    context = {
+        'userprofile': user_profile,
+    }
+    return render(request, 'main/settings.html', context)
+
 
 
 class CustomPasswordResetView(PasswordResetView):
