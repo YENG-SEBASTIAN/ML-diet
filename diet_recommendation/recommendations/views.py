@@ -17,11 +17,14 @@ logger = logging.getLogger(__name__)
 @login_required
 def dashboard_view(request):
     user = request.user
+    profile = None  # Initialize profile to None
+
     # Try to get the user's profile
     try:
         profile = UserProfile.objects.get(user=user)
     except UserProfile.DoesNotExist:
         messages.error(request, "Your profile values are still zeros. Please complete your profile at the settings.")
+    
     # Query UserHealthHistroy for graph data
     health_history = UserHealthHistroy.objects.filter(user=request.user).order_by('id')
 
@@ -57,9 +60,9 @@ def dashboard_view(request):
     graph_html = pyo.plot(fig, output_type='div')
 
     context = {
-        'profile': profile,
+        'profile': profile,  # This will be None if profile doesn't exist
         'graph_html': graph_html,
-        'target_weight': profile.target_weight,
+        'target_weight': profile.target_weight if profile else None,  # Only access target_weight if profile exists
     }
 
     return render(request, 'main/dashboard.html', context)

@@ -49,7 +49,7 @@
                         <div class="flex-grow-1 ms-3">
                             <p class="text-uppercase fw-medium text-muted mb-3">Your Target Health Goal</p>
                             <div class="d-flex align-items-center mb-3">
-                                <h4 class="fs-4 flex-grow-1 mb-0">{{ profile.health_goal|capfirst }}</h4>
+                                <h4 class="fs-4 flex-grow-1 mb-0"> {% if profile.health_goal %} {{ profile.health_goal|capfirst }} {% else %} <small>Set goal now</small> {% endif %} </h4>
                             </div>
                             <p class="text-muted mb-0">My Goal</p>
                         </div>
