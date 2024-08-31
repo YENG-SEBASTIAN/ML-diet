@@ -5,7 +5,7 @@ from django.views import View
 import plotly.graph_objs as go
 import plotly.offline as pyo
 from django.contrib.auth.decorators import login_required
-from recommendations.models import Recommendation,  UserHealthHistroy
+from recommendations.models import Recommendation,  UserHealthHistroy, DietRecommendation
 from account.models import UserProfile
 import logging
 from django.shortcuts import render
@@ -109,10 +109,15 @@ class DietRecommendationView(LoginRequiredMixin, View):
             # Calculate BMI from UserProfile
             user_bmi = user_profile.bmi
 
+            recommendations_df = make_recommendation(user_bmi, health_goal)
+            
+            # Save each recommendation to the database
+            recommendations = []
+
+
+
             # Get diet recommendations
             recommended_diets = recommend_diets(user_bmi, health_goal, n_recommendations=10)
-            new_model = make_recommendation(user_bmi, health_goal)
-            print(new_model)
             # Predict diet types
             predicted_diets = predict_diets(recommended_diets)
 

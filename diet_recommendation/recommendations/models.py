@@ -64,3 +64,21 @@ class DietRecommendationDataset(models.Model):
 
     def __str__(self):
         return self.recommended_diet
+    
+class DietRecommendation(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    meal_type = models.CharField(max_length=50)
+    recommended_diet = models.TextField()
+    calories = models.FloatField()
+    protein = models.FloatField()
+    carbs = models.FloatField()
+    fat = models.FloatField()
+    vitamins = models.TextField()
+    minerals = models.TextField()
+    health_benefits = models.TextField()
+    bmi = models.FloatField()
+    bmi_category = models.CharField(max_length=50)
+    recommendation_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.meal_type} - {self.recommended_diet} ({self.bmi_category})"
