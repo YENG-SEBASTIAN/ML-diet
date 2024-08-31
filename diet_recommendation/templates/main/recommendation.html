@@ -36,22 +36,28 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th>Recommended Diet</th>
+                                        <th>Meal Type</th>
                                         <th>Calories (kcal)</th>
                                         <th>Protein (g)</th>
                                         <th>Carbs (g)</th>
                                         <th>Fat (g)</th>
-                                        <th>BMI</th>
+                                        <th>Vitamins</th>
+                                        <th>Minerals</th>
+                                        <th>Health Benefits</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for diet in recommended_diets %}
                                         <tr>
                                             <td>{{ diet.recommended_diet }}</td>
+                                            <td>{{ diet.meal_type }}</td>
                                             <td>{{ diet.calories }}</td>
                                             <td>{{ diet.protein }}</td>
                                             <td>{{ diet.carbs }}</td>
                                             <td>{{ diet.fat }}</td>
-                                            <td>{{ diet.bmi_at_time }}</td>
+                                            <td>{{ diet.vitamins }}</td>
+                                            <td>{{ diet.minerals }}</td>
+                                            <td>{{ diet.health_benefits }}</td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>

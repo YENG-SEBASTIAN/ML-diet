@@ -1,88 +1,79 @@
-# ml_model.py
-
 import os
+import joblib
 import pandas as pd
 import tensorflow as tf
-import joblib
 from django.conf import settings
 
 # Define the data directory path
 DATA_DIR = os.path.join(settings.BASE_DIR, 'recommendations', 'data')
 
-# Load the trained model, scaler, and label encoder
-model_path = os.path.join(DATA_DIR, 'diet_recommendation_model.h5')
-scaler_path = os.path.join(DATA_DIR, 'scaler.pkl')
-label_encoder_path = os.path.join(DATA_DIR, 'label_encoder.pkl')
-
+# Load the trained model
+model_path = os.path.join(DATA_DIR, 'model.h5')
 model = tf.keras.models.load_model(model_path)
-scaler = joblib.load(scaler_path)
-label_encoder = joblib.load(label_encoder_path)
 
-# Load the CSV data for diet recommendations
-csv_path = os.path.join(DATA_DIR, 'diet_dataset.csv')
-df = pd.read_csv(csv_path)
+# Load LabelEncoders from .pkl files
+bmi_encoder_path = os.path.join(DATA_DIR, 'le_bmi_category.pkl')
+meal_type_encoder_path = os.path.join(DATA_DIR, 'le_meal_type.pkl')
 
-def recommend_diets(user_bmi, health_goal, n_recommendations=10):
-    if health_goal == 'gain weight':
+# Load the LabelEncoders
+le_bmi_category = joblib.load(bmi_encoder_path)
+le_meal_type = joblib.load(meal_type_encoder_path)
+
+# Load the dataset for diet recommendations
+data_file_path = os.path.join(DATA_DIR, 'food_diet.csv')
+df = pd.read_csv(data_file_path)
+
+def make_recommendation(bmi, bmi_category):
+    """Recommend diets based on BMI and a health goal category."""
+    # Define target BMI categories based on the health goal
+    if bmi_category == 'gain weight':
         target_categories = ['Normal weight', 'Overweight']
-    elif health_goal == 'lose weight':
+    elif bmi_category == 'lose weight':
         target_categories = ['Underweight', 'Normal weight']
-    elif health_goal == 'maintain weight':
+    elif bmi_category == 'maintain weight':
         target_categories = ['Normal weight']
     else:
         raise ValueError("Health goal must be 'gain weight', 'lose weight', or 'maintain weight'.")
 
-    # Filter based on target BMI categories
-    filtered_df = df[df['BMI Category'].isin(target_categories)]
-
-    # Ensure diverse meal types in recommendations
-    recommended_diets = (
-        filtered_df.groupby('Meal Type')
-        .apply(lambda x: x.sample(min(len(x), n_recommendations // len(filtered_df['Meal Type'].unique()))))
-        .reset_index(drop=True)
-    )
-
-    if len(recommended_diets) < n_recommendations:
-        additional_diets = filtered_df.sample(n_recommendations - len(recommended_diets))
-        recommended_diets = pd.concat([recommended_diets, additional_diets], ignore_index=True)
-
-    return recommended_diets.head(n_recommendations)
-
-
-
-def predict_diets(recommended_diets):
-    features = ['Calories (kcal)', 'Protein (g)', 'Carbs (g)', 'Fat (g)', 'BMI']
+    # Encode the target BMI categories
+    target_categories_encoded = le_bmi_category.transform(target_categories)
     
-    # Ensure the DataFrame has the correct feature names
-    recommended_diets = recommended_diets.rename(columns={
-        'Calories_kcal': 'Calories (kcal)',
-        'Protein_g': 'Protein (g)',
-        'Carbs_g': 'Carbs (g)',
-        'Fat_g': 'Fat (g)',
-        'BMI': 'BMI',
-    })
+    # Create a DataFrame for prediction input
+    prediction_input = pd.DataFrame({'BMI': [bmi], 'BMI_Category': [target_categories_encoded.mean()]})
+    
+    # Predict the meal type using the loaded model
+    prediction_input_values = prediction_input.values
+    meal_type_pred = model.predict(prediction_input_values)
+    meal_type_pred_class = meal_type_pred.argmax(axis=1)[0]
+    
+    # Decode the meal type to the original label
+    meal_type_decoded = le_meal_type.inverse_transform([meal_type_pred_class])[0]
+    
+    # Filter the recommended diets for the target BMI categories
+    recommended_diets = df[df['BMI Category'].isin(target_categories)]
+    
+    # Group by Meal Type and get at least 3 diets per meal type
+    diets_by_meal_type = recommended_diets.groupby('Meal Type', group_keys=False).apply(lambda x: x.sample(n=min(3, len(x)), replace=True))
+    
+    # Reset the index for easier manipulation
+    diets_by_meal_type.reset_index(drop=True, inplace=True)
+    
+    # Ensure a mix of all meal types
+    unique_meal_types = recommended_diets['Meal Type'].unique()
+    final_recommendations = pd.DataFrame()
 
-    if not set(features).issubset(recommended_diets.columns):
-        raise ValueError("DataFrame does not contain all required features")
+    for meal_type in unique_meal_types:
+        meal_diets = diets_by_meal_type[diets_by_meal_type['Meal Type'] == meal_type]
+        
+        # If there are less than 3, resample from the available diets
+        if len(meal_diets) < 3:
+            additional_diets = recommended_diets[recommended_diets['Meal Type'] == meal_type].sample(n=3 - len(meal_diets), replace=True)
+            meal_diets = pd.concat([meal_diets, additional_diets])
+        
+        final_recommendations = pd.concat([final_recommendations, meal_diets])
+    
+    # Ensure to reset the index for final output
+    final_recommendations.reset_index(drop=True, inplace=True)
 
-    X_test_sample = scaler.transform(recommended_diets[features])
-
-    # Predict diet types using the trained model
-    y_pred_sample = model.predict(X_test_sample)
-    y_pred_classes_sample = y_pred_sample.argmax(axis=1)
-
-    # Decode the predictions to get diet names
-    y_pred_decoded_sample = label_encoder.inverse_transform(y_pred_classes_sample)
-
-    # Add the predicted diet type to the recommended_diets DataFrame
-    recommended_diets['Predicted_Diet'] = y_pred_decoded_sample
-
-    # Rename columns to be template-friendly (no spaces or special characters)
-    recommended_diets = recommended_diets.rename(columns={
-        'Calories (kcal)': 'Calories_kcal',
-        'Protein (g)': 'Protein_g',
-        'Carbs (g)': 'Carbs_g',
-        'Fat (g)': 'Fat_g',
-    })
-
-    return recommended_diets[['Predicted_Diet', 'Calories_kcal', 'Protein_g', 'Carbs_g', 'Fat_g', 'BMI']]
+    # Return the recommended diets
+    return final_recommendations[['Meal Type', 'Recommended Diet', 'Calories (kcal)', 'Protein (g)', 'Carbs (g)', 'Fat (g)', 'Vitamins', 'Minerals', 'Health Benefits']]

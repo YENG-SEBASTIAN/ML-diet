@@ -5,27 +5,23 @@ from django.views import View
 import plotly.graph_objs as go
 import plotly.offline as pyo
 from django.contrib.auth.decorators import login_required
-from recommendations.models import Recommendation,  UserHealthHistroy, DietRecommendation
+from recommendations.models import UserHealthHistroy, DietRecommendation
 from account.models import UserProfile
 import logging
 from django.shortcuts import render
-from recommendations.ml_model import recommend_diets, predict_diets
-from .ml_model2 import make_recommendation
+from recommendations.ml_model import make_recommendation
 
 logger = logging.getLogger(__name__)
-
 
 
 @login_required
 def dashboard_view(request):
     user = request.user
-
     # Try to get the user's profile
     try:
         profile = UserProfile.objects.get(user=user)
     except UserProfile.DoesNotExist:
         messages.error(request, "Your profile values are still zeros. Please complete your profile at the settings.")
-    
     # Query UserHealthHistroy for graph data
     health_history = UserHealthHistroy.objects.filter(user=request.user).order_by('id')
 
@@ -73,9 +69,9 @@ class DietRecommendationView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         # Query the last 10 recommendations for the user, ordered by recommendation_date
-        recent_recommendations = Recommendation.objects.filter(
+        recent_recommendations = DietRecommendation.objects.filter(
             user=request.user
-        ).order_by('-recommendation_date')[:10]
+        ).order_by('-recommendation_date')[:15]
 
         context = {
             'recommended_diets': recent_recommendations
@@ -110,37 +106,26 @@ class DietRecommendationView(LoginRequiredMixin, View):
             user_bmi = user_profile.bmi
 
             recommendations_df = make_recommendation(user_bmi, health_goal)
-            
-            # Save each recommendation to the database
-            recommendations = []
 
-
-
-            # Get diet recommendations
-            recommended_diets = recommend_diets(user_bmi, health_goal, n_recommendations=10)
-            # Predict diet types
-            predicted_diets = predict_diets(recommended_diets)
-
-            if predicted_diets.empty:
-                messages.info(request, "No diets found based on the provided criteria.")
-                return redirect('recommend_diet')
-
-            # Save the predicted diets to the Recommendation model
-            for _, row in predicted_diets.iterrows():
-                Recommendation.objects.create(
-                    user=request.user,
-                    recommended_diet=row['Predicted_Diet'],
-                    calories=row['Calories_kcal'],
-                    protein=row['Protein_g'],
-                    carbs=row['Carbs_g'],
-                    fat=row['Fat_g'],
-                    bmi_at_time=row['BMI'],
+            for _, row in recommendations_df.iterrows():
+                recommendation = DietRecommendation(
+                    user=request.user,  # Associate the recommendation with the current user
+                    meal_type=row['Meal Type'],
+                    recommended_diet=row['Recommended Diet'],
+                    calories=row['Calories (kcal)'],
+                    protein=row['Protein (g)'],
+                    carbs=row['Carbs (g)'],
+                    fat=row['Fat (g)'],
+                    vitamins=row['Vitamins'],
+                    minerals=row['Minerals'],
+                    health_benefits=row['Health Benefits']
                 )
+                recommendation.save()
 
             # Query the last 10 recommendations for the user, ordered by recommendation_date
-            recent_recommendations = Recommendation.objects.filter(
+            recent_recommendations = DietRecommendation.objects.filter(
                 user=request.user
-            ).order_by('-recommendation_date')[:10]
+            ).order_by('-recommendation_date')[:15]
 
             context = {
                 'recommended_diets': recent_recommendations
@@ -166,14 +151,24 @@ class DietPlainView(LoginRequiredMixin, View):
     template_name = 'main/diet_plain.html'
 
     def get(self, request, *args, **kwargs):
-        # Query the last 10 recommendations for the user, ordered by recommendation_date
-        recent_recommendations = Recommendation.objects.filter(
-            user=request.user
-        ).order_by('-recommendation_date')[:10]
+        # Filter recommendations for the logged-in user
+        user_recommendations = DietRecommendation.objects.filter(user=request.user).order_by('-recommendation_date')
+        
+        # Get the total count of the user's recommendations
+        total_count = user_recommendations.count()
+        
+        # Calculate the start index for the slice of recommendations
+        if total_count >= 30:
+            start_index = total_count -15
+        else:
+            start_index = 0
+        # Fetch 15 objects before the last 15 objects
+        recommendations_before_last_15 = user_recommendations[start_index:]
         
         context = {
-            'recommended_diets': recent_recommendations
+            'recommended_diets': recommendations_before_last_15
         }
+        
         return render(request, self.template_name, context)
 
 
