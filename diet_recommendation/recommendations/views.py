@@ -10,7 +10,7 @@ from account.models import UserProfile
 import logging
 from django.shortcuts import render
 from recommendations.ml_model import recommend_diets, predict_diets
-from .ml_model2 import recommend_diets
+from .ml_model2 import make_recommendation
 
 logger = logging.getLogger(__name__)
 
@@ -111,7 +111,7 @@ class DietRecommendationView(LoginRequiredMixin, View):
 
             # Get diet recommendations
             recommended_diets = recommend_diets(user_bmi, health_goal, n_recommendations=10)
-            new_model = recommend_diets(user_bmi, health_goal)
+            new_model = make_recommendation(user_bmi, health_goal)
             print(new_model)
             # Predict diet types
             predicted_diets = predict_diets(recommended_diets)
