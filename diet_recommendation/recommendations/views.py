@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
@@ -71,13 +71,20 @@ class DietRecommendationView(LoginRequiredMixin, View):
     template_name = 'main/recommendation.html'
 
     def get(self, request, *args, **kwargs):
-        # Query the last 10 recommendations for the user, ordered by recommendation_date
+        # Get or create the UserProfile for the user
+        profile, created = UserProfile.objects.get_or_create(user=request.user)
         recent_recommendations = DietRecommendation.objects.filter(
             user=request.user
         ).order_by('-recommendation_date')[:15]
 
+        # Check if the profile is complete
+        profile_complete = profile.height and profile.weight and profile.health_goal or recent_recommendations.empty()
+
+        # Retrieve the last 15 diet recommendations for the user, ordered by recommendation_date
+        # Prepare context for rendering the template
         context = {
-            'recommended_diets': recent_recommendations
+            'recommended_diets': recent_recommendations,
+            'profile_complete': profile_complete,
         }
         return render(request, self.template_name, context)
 
@@ -103,16 +110,18 @@ class DietRecommendationView(LoginRequiredMixin, View):
             user_profile.weight = weight
             user_profile.height = height
             user_profile.health_goal = health_goal
-            user_profile.save()  # This will trigger the signal to create UserHealthHistory
+            user_profile.save()  # trigger the signal to create UserHealthHistory
 
             # Calculate BMI from UserProfile
             user_bmi = user_profile.bmi
 
+            # Generate diet recommendations based on the user's BMI and health goal
             recommendations_df = make_recommendation(user_bmi, health_goal)
 
+            # Save each recommendation to the database
             for _, row in recommendations_df.iterrows():
                 recommendation = DietRecommendation(
-                    user=request.user,  # Associate the recommendation with the current user
+                    user=request.user,
                     meal_type=row['Meal Type'],
                     recommended_diet=row['Recommended Diet'],
                     calories=row['Calories (kcal)'],
@@ -125,7 +134,7 @@ class DietRecommendationView(LoginRequiredMixin, View):
                 )
                 recommendation.save()
 
-            # Query the last 10 recommendations for the user, ordered by recommendation_date
+            # Query the last 15 recommendations for the user, ordered by recommendation_date
             recent_recommendations = DietRecommendation.objects.filter(
                 user=request.user
             ).order_by('-recommendation_date')[:15]
@@ -144,7 +153,6 @@ class DietRecommendationView(LoginRequiredMixin, View):
 @login_required
 def settings(request):
     user_profile = UserProfile.objects.get(user=request.user)
-    print("user_profile", user_profile)
     context = {
         'userprofile': user_profile,
     }
@@ -164,7 +172,7 @@ class DietPlainView(LoginRequiredMixin, View):
         if total_count >= 30:
             start_index = total_count -15
         else:
-            start_index = 0
+            start_index = 15
         # Fetch 15 objects before the last 15 objects
         recommendations_before_last_15 = user_recommendations[start_index:]
         

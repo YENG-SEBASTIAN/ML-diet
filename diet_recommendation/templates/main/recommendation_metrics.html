@@ -12,11 +12,11 @@
         <div class="col-xl-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title mb-0">Histograph for each numerical feature</h4>
+                    <h4 class="card-title mb-0">Histograph for numerical feature</h4>
                 </div>
     
                 <div class="card-body">
-                    <img src="{% static 'images/histograph.jpeg' %}" alt="histograph" width="1000">
+                    <img src="{% static 'images/histograms.png' %}" alt="histograph" width="1000">
                 </div>
             </div>
         </div>
@@ -24,38 +24,7 @@
     </div>
     <!-- end row -->
     
-    <div class="row">
-        <div class="col-xl-12">
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="card-title mb-0">Scatter plot for Calories vs. Protein</h4>
-                </div>
-    
-                <div class="card-body">
-                    <img src="{% static 'images/calories_protein.jpeg' %}" alt="histograph" width="1000">
-                </div>
-            </div>
-        </div>
-        <!-- end col -->
-    </div>
-    <!-- end row -->
-    
-    <div class="row">
-        <div class="col-xl-12">
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="card-title mb-0">Scatter plot for Carbs vs. Fat</h4>
-                </div><!-- end card header -->
-    
-                <div class="card-body">
-                    <img src="{% static 'images/carb_fat.jpeg' %}" alt="histograph" width="1000">
-                </div><!-- end card-body -->
-            </div><!-- end card -->
-        </div>
-        <!-- end col -->
-    </div>
-    <!-- end row -->
-    
+
     <div class="row">
         <div class="col-xl-12">
             <div class="card">
@@ -64,7 +33,37 @@
                 </div>
     
                 <div class="card-body">
-                    <img src="{% static 'images/box_plot.jpeg' %}" alt="histograph" width="1000">
+                    <img src="{% static 'images/boxplots.png' %}" alt="histograph" width="1000">
+                </div>
+            </div>
+        </div>
+        <!-- end col -->
+    </div>
+    <!-- end row -->
+
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">Scatter plot for Calories vs. Protein based on Meal Type</h4>
+                </div>
+                <div class="card-body">
+                    <img src="{% static 'images/scatter_calories_protein_meal_type.png' %}" alt="histograph" width="1000">
+                </div>
+            </div>
+        </div>
+        <!-- end col -->
+    </div>
+    <!-- end row -->
+
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">Scatter plot for Carbs vs. Fat based on Meal Type</h4>
+                </div>
+                <div class="card-body">
+                    <img src="{% static 'images/scatter_carbs_fat_meal_type.png' %}" alt="histograph" width="1000">
                 </div>
             </div>
         </div>
@@ -76,11 +75,26 @@
         <div class="col-xl-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title mb-0">Histograph of dataset</h4>
-                </div>
+                    <h4 class="card-title mb-0">Scatter plot for Carbs vs. Fat based on BMI category</h4>
+                </div><!-- end card header -->
     
                 <div class="card-body">
-                    <img src="{% static 'images/correlation.jpeg' %}" alt="histograph" width="1000">
+                    <img src="{% static 'images/scatter_calories_protein_bmi_category.png' %}" alt="histograph" width="1000">
+                </div><!-- end card-body -->
+            </div><!-- end card -->
+        </div>
+        <!-- end col -->
+    </div>
+    <!-- end row -->
+
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">Scatter plot for Carbs vs. Fat based on BMI category</h4>
+                </div>
+                <div class="card-body">
+                    <img src="{% static 'images/scatter_carbs_fat_bmi_category.png' %}" alt="histograph" width="1000">
                 </div>
             </div>
         </div>
@@ -92,11 +106,27 @@
         <div class="col-xl-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title mb-0">Histograph of dataset</h4>
+                    <h4 class="card-title mb-0">Correlation heatmap of numerical features</h4>
                 </div>
     
                 <div class="card-body">
-                    <img src="{% static 'images/correlation.jpeg' %}" alt="histograph" width="1000">
+                    <img src="{% static 'images/correlation_heatmap.png' %}" alt="histograph" width="1000">
+                </div>
+            </div>
+        </div>
+        <!-- end col -->
+    </div>
+    <!-- end row -->
+    
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">Model Accuracy</h4>
+                </div>
+    
+                <div class="card-body">
+                    <img src="{% static 'images/accuracy.jpeg' %}" alt="histograph" width="1000">
                 </div>
             </div>
         </div>

@@ -15,9 +15,12 @@
     <div class="row justify-content-center">
         <!-- Recommendation Button -->
         <div class="col-md-8 text-center mb-4">
-            <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#recommendationModal">
+            <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#recommendationModal" {% if not profile_complete %}disabled{% endif %}>
                 Make a Recommendation
             </button>
+            {% if not profile_complete %}
+                <p class="text-danger mt-2">Please complete your profile to enable recommendations.</p>
+            {% endif %}
         </div>
 
         <!-- Recommendation Results -->
