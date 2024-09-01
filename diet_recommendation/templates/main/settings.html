@@ -174,19 +174,35 @@
                                         </select>
                                     </div>
                                     <div class="col-lg-12">
+                                        {% if userprofile.health_condition %}
                                         <div class="mb-3">
                                             <label for="healthConditionInput" class="form-label">Health Condition(s)</label>
                                             <input type="text" class="form-control" id="healthConditionInput" name="health_condition" placeholder="Enter your health condition(s)" value="{{ userprofile.health_condition }}">
                                             <small class="form-text text-muted">Separate multiple conditions with commas.</small>
                                         </div>
+                                        {% else %}
+                                        <div class="mb-3">
+                                            <label for="healthConditionInput" class="form-label">Health Condition(s)</label>
+                                            <input type="text" class="form-control" id="healthConditionInput" name="health_condition" placeholder="Enter your health condition(s)" >
+                                            <small class="form-text text-muted">Separate multiple conditions with commas.</small>
+                                        </div>
+                                        {% endif %}
                                     </div>
                                     <!--end col-->
                                     <div class="col-lg-12">
+                                        {% if userprofile.allergies %}
                                         <div class="mb-3">
                                             <label for="allergiesInput" class="form-label">Allergies</label>
                                             <input type="text" class="form-control" id="allergiesInput" name="allergies" placeholder="Enter your allergies" value="{{ userprofile.allergies }}">
                                             <small class="form-text text-muted">Separate multiple allergies with commas.</small>
                                         </div>
+                                        {% else %}
+                                        <div class="mb-3">
+                                            <label for="allergiesInput" class="form-label">Allergies</label>
+                                            <input type="text" class="form-control" id="allergiesInput" name="allergies" placeholder="Enter your allergies">
+                                            <small class="form-text text-muted">Separate multiple allergies with commas.</small>
+                                        </div>
+                                        {% endif %}
                                     </div>
                                     <!--end col-->
                                     <div class="col-lg-12">
