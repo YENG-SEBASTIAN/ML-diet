@@ -5,7 +5,7 @@ from django.views import View
 import plotly.graph_objs as go
 import plotly.offline as pyo
 from django.contrib.auth.decorators import login_required
-from recommendations.models import UserHealthHistroy, DietRecommendation
+from recommendations.models import UserHealthHistory, DietRecommendation
 from account.models import UserProfile
 import logging
 from django.shortcuts import render
@@ -22,11 +22,13 @@ def dashboard_view(request):
     # Try to get the user's profile
     try:
         profile = UserProfile.objects.get(user=user)
+        if profile.weight == profile.target_weight:
+            messages.success(request, "Congratulations! You have successfully achieved your target weight.")
     except UserProfile.DoesNotExist:
-        messages.error(request, "Your profile values are still zeros. Please complete your profile at the settings.")
-    
-    # Query UserHealthHistroy for graph data
-    health_history = UserHealthHistroy.objects.filter(user=request.user).order_by('id')
+        messages.error(request, "Your profile values are still zeros. Please complete your profile in the settings.")
+
+    # Query UserHealthHistory for graph data
+    health_history = UserHealthHistory.objects.filter(user=user).order_by('id')
 
     # Initialize data for the graph
     dates = []
@@ -67,20 +69,26 @@ def dashboard_view(request):
 
     return render(request, 'main/dashboard.html', context)
 
+
 class DietRecommendationView(LoginRequiredMixin, View):
     template_name = 'main/recommendation.html'
 
     def get(self, request, *args, **kwargs):
         # Get or create the UserProfile for the user
         profile, created = UserProfile.objects.get_or_create(user=request.user)
+
+        # Retrieve the last 15 diet recommendations for the user, ordered by recommendation_date
         recent_recommendations = DietRecommendation.objects.filter(
             user=request.user
         ).order_by('-recommendation_date')[:15]
 
         # Check if the profile is complete
-        profile_complete = profile.height and profile.weight and profile.health_goal or recent_recommendations.empty()
+        profile_complete = all([
+            profile.height is not None,
+            profile.weight is not None,
+            profile.health_goal
+        ]) or not recent_recommendations.exists()
 
-        # Retrieve the last 15 diet recommendations for the user, ordered by recommendation_date
         # Prepare context for rendering the template
         context = {
             'recommended_diets': recent_recommendations,
@@ -101,7 +109,7 @@ class DietRecommendationView(LoginRequiredMixin, View):
             height = float(height)
             weight = float(weight)
         except ValueError:
-            messages.error(request, "Invalid height or weight value.")
+            messages.error(request, "Invalid height or weight value. Please enter valid numbers.")
             return redirect('recommend_diet')
 
         try:
@@ -110,7 +118,7 @@ class DietRecommendationView(LoginRequiredMixin, View):
             user_profile.weight = weight
             user_profile.height = height
             user_profile.health_goal = health_goal
-            user_profile.save()  # trigger the signal to create UserHealthHistory
+            user_profile.save()  # This triggers the signal to create UserHealthHistory
 
             # Calculate BMI from UserProfile
             user_bmi = user_profile.bmi
@@ -120,36 +128,45 @@ class DietRecommendationView(LoginRequiredMixin, View):
 
             # Save each recommendation to the database
             for _, row in recommendations_df.iterrows():
-                recommendation = DietRecommendation(
+                DietRecommendation.objects.update_or_create(
                     user=request.user,
                     meal_type=row['Meal Type'],
-                    recommended_diet=row['Recommended Diet'],
-                    calories=row['Calories (kcal)'],
-                    protein=row['Protein (g)'],
-                    carbs=row['Carbs (g)'],
-                    fat=row['Fat (g)'],
-                    vitamins=row['Vitamins'],
-                    minerals=row['Minerals'],
-                    health_benefits=row['Health Benefits']
+                    defaults={
+                        'recommended_diet': row['Recommended Diet'],
+                        'calories': row['Calories (kcal)'],
+                        'protein': row['Protein (g)'],
+                        'carbs': row['Carbs (g)'],
+                        'fat': row['Fat (g)'],
+                        'vitamins': row['Vitamins'],
+                        'minerals': row['Minerals'],
+                        'health_benefits': row['Health Benefits']
+                    }
                 )
-                recommendation.save()
 
-            # Query the last 15 recommendations for the user, ordered by recommendation_date
+            # Retrieve the last 15 diet recommendations for the user
             recent_recommendations = DietRecommendation.objects.filter(
                 user=request.user
             ).order_by('-recommendation_date')[:15]
 
+            # Check if the profile is complete
+            profile_complete = all([
+                user_profile.height is not None,
+                user_profile.weight is not None,
+                user_profile.health_goal
+            ]) or not recent_recommendations.exists()
+
+            # Prepare context for rendering the template
             context = {
-                'recommended_diets': recent_recommendations
+                'recommended_diets': recent_recommendations,
+                'profile_complete': profile_complete,
             }
 
             return render(request, self.template_name, context)
 
         except Exception as e:
-            logger.error(f"Error in diet recommendation view: {e}")
-            messages.error(request, "An error occurred while processing your request.")
+            logger.error(f"Error processing diet recommendation request: {e}")
+            messages.error(request, "An error occurred while processing your request. Please try again.")
             return redirect('recommend_diet')
-
 @login_required
 def settings(request):
     user_profile = UserProfile.objects.get(user=request.user)

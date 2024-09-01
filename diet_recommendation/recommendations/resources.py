@@ -1,5 +1,5 @@
 from import_export import resources
-from .models import (DietRecommendation, DietPlan, UserHealthHistroy )
+from .models import (DietRecommendation, DietPlan, UserHealthHistory )
 
 class DietRecommendationResource(resources.ModelResource):
     class Meta:
@@ -11,6 +11,6 @@ class DietPlanResource(resources.ModelResource):
 
 
         
-class UserHealthHistroyResource(resources.ModelResource):
+class UserHealthHistoryResource(resources.ModelResource):
     class Meta:
-        model = UserHealthHistroy
+        model = UserHealthHistory

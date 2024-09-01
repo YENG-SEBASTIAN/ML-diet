@@ -13,7 +13,7 @@ class DietPlan(models.Model):
     def __str__(self):
         return self.name
 
-class UserHealthHistroy(models.Model):
+class UserHealthHistory(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     weight = models.FloatField(null=True, blank=True)  # Weight in kilograms
     height = models.FloatField(null=True, blank=True)  # Height in meters
