@@ -95,7 +95,7 @@ class DietRecommendationView(LoginRequiredMixin, View):
             profile.height is not None,
             profile.weight is not None,
             profile.health_goal
-        ]) or not recent_recommendations.exists()
+        ])
 
         # Prepare context for rendering the template
         context = {
