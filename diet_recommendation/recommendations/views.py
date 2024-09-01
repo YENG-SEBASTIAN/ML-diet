@@ -76,6 +76,9 @@ class DietRecommendationView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         # Get or create the UserProfile for the user
         profile, created = UserProfile.objects.get_or_create(user=request.user)
+        
+        if profile.weight == profile.target_weight:
+            messages.success(request, "Congratulations! You have successfully achieved your target weight.")
 
         # Retrieve the last 15 diet recommendations for the user, ordered by recommendation_date
         recent_recommendations = DietRecommendation.objects.filter(
@@ -126,21 +129,19 @@ class DietRecommendationView(LoginRequiredMixin, View):
             # Generate diet recommendations based on the user's BMI and health goal
             recommendations_df = make_recommendation(user_bmi, health_goal)
 
-            # Save each recommendation to the database
+            # Save each recommendation to the database as a new object
             for _, row in recommendations_df.iterrows():
-                DietRecommendation.objects.update_or_create(
+                DietRecommendation.objects.create(
                     user=request.user,
                     meal_type=row['Meal Type'],
-                    defaults={
-                        'recommended_diet': row['Recommended Diet'],
-                        'calories': row['Calories (kcal)'],
-                        'protein': row['Protein (g)'],
-                        'carbs': row['Carbs (g)'],
-                        'fat': row['Fat (g)'],
-                        'vitamins': row['Vitamins'],
-                        'minerals': row['Minerals'],
-                        'health_benefits': row['Health Benefits']
-                    }
+                    recommended_diet=row['Recommended Diet'],
+                    calories=row['Calories (kcal)'],
+                    protein=row['Protein (g)'],
+                    carbs=row['Carbs (g)'],
+                    fat=row['Fat (g)'],
+                    vitamins=row['Vitamins'],
+                    minerals=row['Minerals'],
+                    health_benefits=row['Health Benefits']
                 )
 
             # Retrieve the last 15 diet recommendations for the user
@@ -155,6 +156,9 @@ class DietRecommendationView(LoginRequiredMixin, View):
                 user_profile.health_goal
             ]) or not recent_recommendations.exists()
 
+            # Add success message
+            messages.success(request, "Your Diet recommendation was successful.")
+
             # Prepare context for rendering the template
             context = {
                 'recommended_diets': recent_recommendations,
@@ -167,6 +171,9 @@ class DietRecommendationView(LoginRequiredMixin, View):
             logger.error(f"Error processing diet recommendation request: {e}")
             messages.error(request, "An error occurred while processing your request. Please try again.")
             return redirect('recommend_diet')
+
+
+
 @login_required
 def settings(request):
     user_profile = UserProfile.objects.get(user=request.user)

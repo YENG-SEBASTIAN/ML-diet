@@ -119,11 +119,25 @@
 
 {% endblock %}
 
-{% block scripts %}
+{% block extra_js %}
 <script>
-    // Show spinner on form submit
-    document.getElementById('recommendationForm').addEventListener('submit', function() {
-        document.getElementById('loadingSpinner').classList.remove('d-none');
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('recommendationForm');
+        const spinner = document.getElementById('loadingSpinner');
+        
+        form.addEventListener('submit', function() {
+            // Show the loading spinner
+            spinner.classList.remove('d-none');
+
+            // Optionally, you can disable the form to prevent multiple submissions
+            form.querySelector('button[type="submit"]').disabled = true;
+        });
+
+        // also add a listener for form submission errors to hide the spinner
+        form.addEventListener('ajax:error', function() {
+            spinner.classList.add('d-none');
+            form.querySelector('button[type="submit"]').disabled = false;
+        });
     });
 </script>
 {% endblock %}
