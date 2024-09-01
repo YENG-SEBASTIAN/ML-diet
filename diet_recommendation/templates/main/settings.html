@@ -26,7 +26,7 @@
                             {% if user.profile_image %}
                                 <img src="{{ user.profile_image.url }}" class="rounded-circle avatar-xl img-thumbnail user-profile-image"  alt="{{ user.username }}'s profile image" />
                             {% else %}
-                            <img src="{% static 'images/users/avatar-1.jpg' %}" class="rounded-circle avatar-xl img-thumbnail user-profile-image" alt="{{ user.username }}'s profile image" />
+                            <img src="{% static 'images/users/user-dummy-img.jpg' %}" class="rounded-circle avatar-xl img-thumbnail user-profile-image" alt="{{ user.username }}'s profile image" />
                             {% endif %}
                             <div class="avatar-xs p-0 rounded-circle profile-photo-edit">
                             </div>
