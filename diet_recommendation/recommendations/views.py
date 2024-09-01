@@ -77,9 +77,6 @@ class DietRecommendationView(LoginRequiredMixin, View):
         # Get or create the UserProfile for the user
         profile, created = UserProfile.objects.get_or_create(user=request.user)
         
-        if profile.weight == profile.target_weight:
-            messages.success(request, "Congratulations! You have successfully achieved your target weight.")
-
         # Retrieve the last 15 diet recommendations for the user, ordered by recommendation_date
         recent_recommendations = DietRecommendation.objects.filter(
             user=request.user
