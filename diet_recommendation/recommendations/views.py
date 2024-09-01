@@ -22,8 +22,16 @@ def dashboard_view(request):
     # Try to get the user's profile
     try:
         profile = UserProfile.objects.get(user=user)
-        if profile.weight == profile.target_weight:
-            messages.success(request, "Congratulations! You have successfully achieved your target weight.")
+
+        # Check if both weight and target_weight are non-zero and equal
+        if profile.weight is not None and profile.target_weight is not None:
+            if profile.weight != 0 and profile.target_weight != 0 and profile.weight == profile.target_weight:
+                messages.success(request, "Congratulations! You have successfully achieved your target weight.")
+            else:
+                logger.error("User has not achieved target weight or profile values are not set correctly.")
+        else:
+            logger.debug("Profile values are None or zero, unable to determine target weight achievement.")
+
     except UserProfile.DoesNotExist:
         messages.error(request, "Your profile values are still zeros. Please complete your profile in the settings.")
 
