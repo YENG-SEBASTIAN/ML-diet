@@ -184,7 +184,7 @@ def settings(request):
     user_profile, created = UserProfile.objects.get_or_create(user=request.user)
     
     if created:
-        messages.info(request, "A new profile has been created. Please complete your profile.")
+        messages.info(request, "Please update your profile.")
 
     context = {
         'userprofile': user_profile,
