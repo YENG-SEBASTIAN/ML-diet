@@ -181,7 +181,11 @@ class DietRecommendationView(LoginRequiredMixin, View):
 
 @login_required
 def settings(request):
-    user_profile = UserProfile.objects.get(user=request.user)
+    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+    
+    if created:
+        messages.info(request, "A new profile has been created. Please complete your profile.")
+
     context = {
         'userprofile': user_profile,
     }
