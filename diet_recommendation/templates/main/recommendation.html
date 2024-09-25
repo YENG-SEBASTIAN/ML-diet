@@ -44,8 +44,8 @@
                                         <th>Protein (g)</th>
                                         <th>Carbs (g)</th>
                                         <th>Fat (g)</th>
-                                        <th>Vitamins</th>
-                                        <th>Minerals</th>
+                                        {% comment %} <th>Vitamins</th>
+                                        <th>Minerals</th> {% endcomment %}
                                         <th>Health Benefits</th>
                                     </tr>
                                 </thead>
@@ -58,8 +58,8 @@
                                             <td>{{ diet.protein }}</td>
                                             <td>{{ diet.carbs }}</td>
                                             <td>{{ diet.fat }}</td>
-                                            <td>{{ diet.vitamins }}</td>
-                                            <td>{{ diet.minerals }}</td>
+                                            {% comment %} <td>{{ diet.vitamins }}</td>
+                                            <td>{{ diet.minerals }}</td> {% endcomment %}
                                             <td>{{ diet.health_benefits }}</td>
                                         </tr>
                                     {% endfor %}
