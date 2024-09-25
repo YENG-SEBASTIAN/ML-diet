@@ -24,7 +24,7 @@ import dj_database_url
 SECRET_KEY = 'django-insecure-6xok+nipl@-+b3)(!nos1g+nkuq157n0u92w5$n_tof2sb3x1+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "ml-diet.onrender.com"]
 
