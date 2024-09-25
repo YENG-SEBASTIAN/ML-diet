@@ -8,7 +8,7 @@ from django.conf import settings
 DATA_DIR = os.path.join(settings.BASE_DIR, 'recommendations', 'data')
 
 # Load the trained model
-model_path = os.path.join(DATA_DIR, 'model.h5')
+model_path = os.path.join(DATA_DIR, 'saved_diet_model.h5')
 model = tf.keras.models.load_model(model_path)
 
 # Load LabelEncoders from .pkl files
@@ -20,7 +20,7 @@ le_bmi_category = joblib.load(bmi_encoder_path)
 le_meal_type = joblib.load(meal_type_encoder_path)
 
 # Load the dataset for diet recommendations
-data_file_path = os.path.join(DATA_DIR, 'food_diet.csv')
+data_file_path = os.path.join(DATA_DIR, 'diet_dataset.csv')
 df = pd.read_csv(data_file_path)
 
 def make_recommendation(bmi, bmi_category):
@@ -76,4 +76,4 @@ def make_recommendation(bmi, bmi_category):
     final_recommendations.reset_index(drop=True, inplace=True)
 
     # Return the recommended diets
-    return final_recommendations[['Meal Type', 'Recommended Diet', 'Calories (kcal)', 'Protein (g)', 'Carbs (g)', 'Fat (g)', 'Vitamins', 'Minerals', 'Health Benefits']]
+    return final_recommendations[['Meal Type', 'Recommended Diet', 'Calories (kcal)', 'Protein (g)', 'Carbs (g)', 'Fat (g)', 'Health Benefits']]

@@ -144,8 +144,6 @@ class DietRecommendationView(LoginRequiredMixin, View):
                     protein=row['Protein (g)'],
                     carbs=row['Carbs (g)'],
                     fat=row['Fat (g)'],
-                    vitamins=row['Vitamins'],
-                    minerals=row['Minerals'],
                     health_benefits=row['Health Benefits']
                 )
 
